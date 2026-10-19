@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Puri Connect — Operator App (demo)</title>
+<title>Puri Connect — Operator App</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..600&family=Karla:wght@400;500;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -109,7 +109,7 @@ nav.tabs .b{position:absolute;top:1px;right:calc(50% - 22px);background:var(--ba
 .slot.done{opacity:.55}
 .slot.free{color:var(--mut);border-style:dashed}
 .demo{display:flex;justify-content:space-between;align-items:center;gap:10px;flex:none;background:transparent;color:var(--mut);border-bottom:1px solid rgba(32,24,18,.07);padding:8px 16px;font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase}
-.demo button{background:transparent;border:1px solid var(--line);color:var(--txt);font-family:var(--mono);font-weight:500;font-size:8.5px;letter-spacing:.06em;padding:5px 9px;min-height:28px;border-radius:999px;text-transform:uppercase}
+.demo button{background:transparent;border:1px solid var(--line);color:var(--txt);font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.04em;padding:4px 11px;min-height:30px;border-radius:999px;text-transform:uppercase}
 .tg{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(32,24,18,.07);min-height:48px}
 .tg:first-child{border-top:0}
 .tg .lbl{flex:1}
@@ -118,6 +118,23 @@ nav.tabs .b{position:absolute;top:1px;right:calc(50% - 22px);background:var(--ba
 .tg .sw::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
 .tg .sw[aria-checked="true"]{background:var(--sec)}
 .tg .sw[aria-checked="true"]::after{left:25px}
+.sos-card.over{border-color:rgba(178,50,32,.55);background:rgba(178,50,32,.05);animation:sosPulse 2s ease-in-out infinite}
+.sos-card .over-chip{display:none}
+.sos-card.over .over-chip{display:inline-flex}
+@keyframes sosPulse{0%,100%{box-shadow:0 0 0 0 rgba(178,50,32,0)}50%{box-shadow:0 0 0 4px rgba(178,50,32,.12)}}
+.slipbox{border:1px dashed var(--line);background:var(--chbg);border-radius:12px;padding:10px 12px;margin-top:10px;font-family:var(--mono);font-size:11.5px;line-height:1.9;color:var(--txt)}
+.slipbox b{font-weight:500}
+.sealcard{display:flex;align-items:center;gap:12px;border:1.5px dashed var(--p);border-radius:14px;padding:12px 14px;margin-top:12px;background:rgba(75,57,166,.05);flex-wrap:wrap}
+.seal{width:46px;height:46px;border-radius:50%;border:2px solid var(--p);color:var(--p);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px;flex:none}
+.sealcard .t{flex:1;min-width:140px}
+.sealcard .t b{display:block;font-family:var(--serif);font-weight:500;font-size:17px}
+.post{border:1px solid rgba(32,24,18,.08);background:var(--chbg);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+.prev-ann{border:1px dashed var(--line);border-radius:14px;padding:12px 14px;background:var(--bg);margin-top:12px}
+.toastb{margin-left:10px;background:none;border:1px solid currentColor;color:inherit;font:inherit;font-weight:700;border-radius:999px;padding:3px 12px;min-height:28px}
+.btn.cfirming{box-shadow:0 0 0 3px rgba(75,57,166,.25)}
+.petx{margin-top:10px;border-top:1px solid rgba(32,24,18,.07);padding-top:8px}
+.petx[hidden]{display:none}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 body.dark{--bg:#151210;--surf:#1F1A16;--txt:#F2EBDD;--mut:#B2A18B;--line:#3A322B;--p:#9C8CF2;--p2:#B4A9F7;--sec:#86C4A5;--good:#86C4A5;--wa:#E0A558;--amber:#E0A558;--bad:#E4745F;--chbg:#2A231D;--chipst:#1E2D25;--chipwarn:#33280F}
 body.dark .statusbar{background:#0D0B09;color:#B2A18B}
 body.dark header.top{border-bottom-color:var(--line)}
@@ -132,7 +149,8 @@ body.dark .demo{border-bottom-color:var(--line)}
 body.dark .tg{border-top-color:var(--line)}
 body.dark .tg .sw{background:#4A4038}
 body.dark .phase .st.on{color:#151210}
-body.dark .sos-card.alarm{background:rgba(228,116,95,.08);border-color:rgba(228,116,95,.5)}
+body.dark .sos-card.alarm,body.dark .sos-card.over{background:rgba(228,116,95,.08);border-color:rgba(228,116,95,.5)}
+body.dark .post{border-color:var(--line)}
 body.dark .ev .d7{border-color:var(--surf)}
 </style>
 </head>
@@ -153,81 +171,94 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const M=60000,H=3600000,NOW0=Date.now();
 const fmtT=ts=>new Date(ts).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
 const ago=ts=>{const d=Date.now()-ts;if(d<M)return'baru saja';if(d<H)return Math.round(d/M)+' mnt lalu';if(d<24*H)return Math.round(d/H)+' jam lalu';return Math.round(d/(24*H))+' hari lalu'};
+const fmtD=ts=>new Date(ts).toLocaleDateString('id-ID',{day:'2-digit',month:'short'});
 const STAFF=['Rina — CS/Admin','Bayu — Teknisi','Asep — Pos Jaga','Sari — Keuangan','Citra — Moderator'];
 const ROLES=[['cs','Rina — CS / Admin','A'],['tek','Bayu — Teknisi','A'],['pos','Asep — Pos Jaga','A'],['keu','Sari — Keuangan','A'],['mod','Citra — Moderator','A'],['rt','Wachid — Pak RT Blok A','B'],['rw','Hesti — Ketua RW','B']];
 const CANNED=[
- ['Umum','Terima kasih, laporan Anda sudah kami terima dan sedang ditindaklanjuti petugas (demo).'],
- ['Tiket','Teknisi dijadwalkan datang hari ini pukul {jam}. Mohon pastikan unit dapat diakses (demo).'],
- ['Pembayaran','Bukti transfer Anda sudah kami terima dan sedang diverifikasi bagian keuangan (demo).'],
- ['Booking','Slot Anda kami konfirmasi. Harap menjaga kebersihan dan mengembalikan peralatan (demo).'],
- ['Laporan','Terima kasih. Lokasi sudah dicek petugas dan perbaikan dijadwalkan pekan ini (demo).'],
- ['Moderasi','Postingan diturunkan karena melanggar aturan komunitas: jual-beli hanya di Bursa (demo).']];
+ ['Umum','Terima kasih, laporan Anda sudah kami terima dan sedang ditindaklanjuti petugas.'],
+ ['Tiket','Teknisi dijadwalkan datang hari ini pukul {jam}. Mohon pastikan unit dapat diakses.'],
+ ['Pembayaran','Bukti transfer Anda sudah kami terima dan sedang diverifikasi bagian keuangan.'],
+ ['Booking','Slot Anda kami konfirmasi. Harap menjaga kebersihan dan mengembalikan peralatan.'],
+ ['Laporan','Terima kasih. Lokasi sudah dicek petugas dan perbaikan dijadwalkan pekan ini.'],
+ ['Moderasi','Postingan diturunkan karena melanggar aturan komunitas: jual-beli hanya di Bursa.']];
 const FACILITIES=[{id:'lap1',name:'Lapangan badminton 1'},{id:'lap2',name:'Lapangan badminton 2'},{id:'serba',name:'Ruang serbaguna'}];
 function seedSlots(){return[
- {f:'lap1',t:'15.00',who:'Rian — B-10-05',id:'BK-3298',state:'baru'},
- {f:'lap1',t:'16.00',who:'Maya — B-11-05',id:'BK-3301',state:'baru'},
- {f:'lap1',t:'18.00',who:'Dimas — A-11-04',id:'BK-3295',state:'konfirmasi'},
- {f:'lap2',t:'19.00',who:'Tia — B-10-05',id:'BK-3290',state:'konfirmasi'},
- {f:'serba',t:'19.00',who:'RT Blok A',id:'BK-3287',state:'konfirmasi'}];}
+ {f:'lap1',t:'15.00',who:'Rian — B-10-05',id:'BK-3298',state:'baru',d:'25'},
+ {f:'lap1',t:'16.00',who:'Maya — B-11-05',id:'BK-3301',state:'baru',d:'25'},
+ {f:'lap1',t:'18.00',who:'Dimas — A-11-04',id:'BK-3295',state:'konfirmasi',d:'25'},
+ {f:'lap2',t:'19.00',who:'Tia — B-10-05',id:'BK-3290',state:'konfirmasi',d:'25'},
+ {f:'serba',t:'19.00',who:'RT Blok A',id:'BK-3287',state:'konfirmasi',d:'25'}];}
 function seed(){
  const T=NOW0;
  return {v:1,ws:'A',role:'cs',prop:'Puri',dark:false,
  reqs:[
-  {id:'TK-1042',type:'tiket',prio:'tinggi',from:'Dimas',unit:'A-11-04',title:'Kran kamar mandi bocor terus',desc:'Kran wastafel bocor sejak kemarin malam, air menetes terus. Mohon dibantu, sudah pakai ember penampung.',state:'baru',assignee:null,created:T-38*M,sla:120,ev:true,csat:null,
-   tl:[{t:T-38*M,by:'Sistem',x:'Permintaan diterima — balasan otomatis terkirim ke warga (SLA 2 jam kerja).'}]},
-  {id:'BY-2210',type:'bayar',prio:'normal',from:'Rina',unit:'A-11-03',title:'Verifikasi bukti transfer — iuran Oktober',desc:'Bukti transfer BCA Rp 350.000 atas nama R. Wijaya. Terlampir foto slip (demo).',amount:350000,state:'baru',assignee:null,created:T-95*M,sla:240,csat:null,
-   tl:[{t:T-95*M,by:'Sistem',x:'Bukti diterima — masuk antrean verifikasi keuangan (SLA 4 jam kerja).'}]},
-  {id:'BK-3301',type:'booking',prio:'normal',from:'Maya',unit:'B-11-05',title:'Booking lapangan badminton — Sab 25 Okt, 16.00',desc:'Booking 1 jam untuk 4 orang. Fasilitas: Lapangan badminton 1 (demo).',state:'baru',assignee:null,created:T-2*H,sla:120,csat:null,
-   tl:[{t:T-2*H,by:'Sistem',x:'Permintaan booking masuk — cek ketersediaan & konflik jadwal.'}]},
-  {id:'RP-5510',type:'laporan',prio:'normal',from:'Bayu',unit:'A-05-09',title:'Lampu koridor Blok A lorong 3 padam',desc:'Sejak tiga hari lampu lorong mati, gelap di malam hari. Minta diteruskan ke pengelola.',cat:'Fasilitas',state:'baru',assignee:null,created:T-5*H,sla:240,csat:null,
-   tl:[{t:T-5*H,by:'Sistem',x:'Laporan warga masuk antrean Tata Kelola (RT/RW).'}]},
-  {id:'PB-7710',type:'pekerjaan',prio:'normal',from:'RT Blok A',unit:'Taman A',title:'Perbaikan taman depan Blok A — diteruskan RT',desc:'Diteruskan Pak RT: rumput tinggi & 2 lampu taman mati. Anggaran kecil, minta jadwal pengelola (demo).',state:'baru',assignee:null,created:T-7*H,sla:480,csat:null,
-   tl:[{t:T-7*H,by:'Wachid (Pak RT A)',x:'Diteruskan ke pengelola — pekerjaan lingkup pengelola.'},{t:T-7*H,by:'Sistem',x:'Pekerjaan masuk kotak masuk pengelola.'}]},
-  {id:'MR-6621',type:'moderasi',prio:'normal',from:'Citra',unit:'C-07-14',title:'Laporan postingan: jualan di luar Bursa',desc:'Postingan di feed grup “Hobi” berisi jual-beli. Mohon ditindak sesuai aturan.',state:'baru',assignee:null,created:T-3*H,sla:240,csat:null,
-   tl:[{t:T-3*H,by:'Sistem',x:'Laporan moderasi masuk — SLA awal 4 jam.'}]},
-  {id:'KR-8801',type:'kiriman',prio:'normal',from:'Kurir JNE',unit:'A-11-04',title:'Paket menunggu di pos — A-11-04',desc:'1 paket (kardus sedang) atas nama Dimas. Sudah difoto dan dicatat pos jaga.',state:'baru',assignee:'Asep — Pos Jaga',created:T-50*M,sla:60,csat:null,
-   tl:[{t:T-50*M,by:'Sistem',x:'Paket dicatat pos jaga — menunggu pemilik mengambil.'}]},
-  {id:'TK-1039',type:'tiket',prio:'normal',from:'Tia',unit:'B-10-05',title:'Lampu kamar mandi berkedip',desc:'Lampu berkedip saat dinyalakan.',state:'dikerjakan',assignee:'Bayu — Teknisi',created:T-26*H,sla:2880,ev:false,csat:null,
-   tl:[{t:T-25*H,by:'Rina — CS / Admin',x:'Diklaim dan ditugaskan ke teknisi.'},{t:T-24*H,by:'Bayu — Teknisi',x:'Dijadwalkan kunjungan besok pagi (demo).'},{t:T-3*H,by:'Bayu — Teknisi',x:'Pengecekan: fitting perlu diganti. Part dipesan (demo).'}]},
-  {id:'TK-1031',type:'tiket',prio:'rendah',from:'Iqbal',unit:'C-01-08',title:'Kunci pintu balkon seret',desc:'Pintu balkon susah dibuka.',state:'selesai',assignee:'Bayu — Teknisi',created:T-72*H,sla:2880,ev:false,csat:5,
-   tl:[{t:T-70*H,by:'Rina — CS / Admin',x:'Ditugaskan ke teknisi.'},{t:T-40*H,by:'Bayu — Teknisi',x:'Pintu diservis, pelumasan rel — selesai. Bukti foto dikirim (demo).'},{t:T-30*H,by:'Sistem',x:'Warga mengonfirmasi selesai — CSAT 5/5.'}]},
-  {id:'BY-2205',type:'bayar',prio:'normal',from:'Hendra',unit:'A-08-12',title:'Verifikasi bukti transfer — iuran Oktober',amount:350000,state:'selesai',assignee:'Sari — Keuangan',created:T-30*H,sla:240,csat:4,
-   tl:[{t:T-29*H,by:'Sari — Keuangan',x:'Diverifikasi: nominal & tanggal cocok — status Lunas (seal demo).'},{t:T-29*H,by:'Sistem',x:'Kuitansi + status Lunas dikirim ke warga. CSAT 4/5.'}]},
-  {id:'RP-5502',type:'laporan',prio:'normal',from:'Nadia',unit:'D-03-06',title:'Keran air taman mati',cat:'Fasilitas',desc:'Keran penyiraman taman tidak mengalir.',state:'diteruskan',assignee:'Wachid — Pak RT A',created:T-52*H,sla:240,csat:null,
-   tl:[{t:T-51*H,by:'Wachid — Pak RT A',x:'Laporan diterima dan dicek lokasi.'},{t:T-50*H,by:'Wachid — Pak RT A',x:'Diteruskan ke pengelola sebagai pekerjaan (PB-7698).'}]}
+ {id:'TK-1042',type:'tiket',prio:'tinggi',from:'Dimas',unit:'A-11-04',title:'Kran kamar mandi bocor terus',desc:'Kran wastafel bocor sejak kemarin malam, air menetes terus. Mohon dibantu, sudah pakai ember penampung.',state:'baru',assignee:null,created:T-38*M,sla:120,ev:true,csat:null,
+  tl:[{t:T-38*M,by:'Sistem',x:'Permintaan diterima — balasan otomatis terkirim ke warga (SLA 2 jam kerja).'}]},
+ {id:'BY-2210',type:'bayar',prio:'normal',from:'Rina',unit:'A-11-03',title:'Verifikasi bukti transfer — iuran Oktober',desc:'Bukti transfer dilampirkan lewat aplikasi warga.',amount:350000,state:'baru',assignee:null,created:T-95*M,sla:240,csat:null,pay:{bank:'BCA',sender:'R. Wijaya',on:'18 Okt · 09.12',due:'Iuran Oktober — Rp 350.000',flag:'Nama pengirim berbeda dari akun warga (Rina)'},
+  tl:[{t:T-95*M,by:'Sistem',x:'Bukti diterima — masuk antrean verifikasi keuangan (SLA 4 jam kerja).'}]},
+ {id:'BK-3301',type:'booking',prio:'normal',from:'Maya',unit:'B-11-05',title:'Booking lapangan badminton 1 — Sab 25 Okt, 16.00',desc:'Booking 1 jam untuk 4 orang. Fasilitas: Lapangan badminton 1.',state:'baru',assignee:null,created:T-2*H,sla:120,csat:null,
+  tl:[{t:T-2*H,by:'Sistem',x:'Permintaan booking masuk — cek ketersediaan & konflik jadwal.'}]},
+ {id:'BK-3298',type:'booking',prio:'normal',from:'Rian',unit:'B-10-05',title:'Booking lapangan badminton 1 — Sab 25 Okt, 15.00',desc:'Booking 1 jam. Fasilitas: Lapangan badminton 1.',state:'baru',assignee:null,created:T-4*H,sla:120,csat:null,
+  tl:[{t:T-4*H,by:'Sistem',x:'Permintaan booking masuk — cek ketersediaan & konflik jadwal.'}]},
+ {id:'BK-3295',type:'booking',prio:'normal',from:'Dimas',unit:'A-11-04',title:'Booking lapangan badminton 1 — Sab 25 Okt, 18.00',desc:'Booking 1 jam untuk 4 orang. Fasilitas: Lapangan badminton 1.',state:'konfirmasi',assignee:'Rina — CS/Admin',created:T-22*H,sla:120,csat:null,
+  tl:[{t:T-22*H,by:'Sistem',x:'Permintaan booking masuk.'},{t:T-21*H,by:'Rina — CS/Admin',x:'Slot dikonfirmasi & terkirim ke warga.'}]},
+ {id:'BK-3290',type:'booking',prio:'normal',from:'Tia',unit:'B-10-05',title:'Booking lapangan badminton 2 — Sab 25 Okt, 19.00',desc:'Booking 1 jam untuk 6 orang. Fasilitas: Lapangan badminton 2.',state:'konfirmasi',assignee:'Rina — CS/Admin',created:T-28*H,sla:120,csat:null,
+  tl:[{t:T-28*H,by:'Sistem',x:'Permintaan booking masuk.'},{t:T-27*H,by:'Rina — CS/Admin',x:'Slot dikonfirmasi & terkirim ke warga.'}]},
+ {id:'BK-3287',type:'booking',prio:'normal',from:'RT Blok A',unit:'Ruang serbaguna',title:'Booking ruang serbaguna — Sab 25 Okt, 19.00',desc:'Rapat RT Blok A. Fasilitas: Ruang serbaguna.',state:'konfirmasi',assignee:'Rina — CS/Admin',created:T-40*H,sla:120,csat:null,
+  tl:[{t:T-40*H,by:'Sistem',x:'Permintaan booking masuk.'},{t:T-39*H,by:'Rina — CS/Admin',x:'Slot dikonfirmasi & terkirim ke warga.'}]},
+ {id:'RP-5510',type:'laporan',prio:'normal',from:'Bayu',unit:'A-05-09',title:'Lampu koridor Blok A lorong 3 padam',desc:'Sejak tiga hari lampu lorong mati, gelap di malam hari. Minta diteruskan ke pengelola.',cat:'Fasilitas',state:'baru',assignee:null,created:T-5*H,sla:240,csat:null,
+  tl:[{t:T-5*H,by:'Sistem',x:'Laporan warga masuk antrean Tata Kelola (RT/RW).'}]},
+ {id:'PB-7710',type:'pekerjaan',prio:'normal',from:'RT Blok A',unit:'Taman A',title:'Perbaikan taman depan Blok A — diteruskan RT',desc:'Diteruskan Pak RT: rumput tinggi & 2 lampu taman mati. Anggaran kecil, minta jadwal pengelola.',state:'baru',assignee:null,created:T-7*H,sla:480,csat:null,
+  tl:[{t:T-7*H,by:'Wachid (Pak RT A)',x:'Diteruskan ke pengelola — pekerjaan lingkup pengelola.'},{t:T-7*H,by:'Sistem',x:'Pekerjaan masuk kotak masuk pengelola.'}]},
+ {id:'MR-6621',type:'moderasi',prio:'normal',from:'Citra',unit:'C-07-14',title:'Laporan postingan: jualan di luar Bursa',desc:'Postingan di feed grup “Hobi” berisi jual-beli. Mohon ditindak sesuai aturan.',state:'baru',assignee:null,created:T-3*H,sla:240,csat:null,post:{by:'Andi — C-07-02',grp:'Grup “Hobi”',txt:'Raket Yonex siap kirim, minat DM. Bisa COD di basement C malam ini.'},
+  tl:[{t:T-3*H,by:'Sistem',x:'Laporan moderasi masuk — SLA awal 4 jam.'}]},
+ {id:'KR-8801',type:'kiriman',prio:'normal',from:'Kurir JNE',unit:'A-11-04',title:'Paket menunggu di pos — A-11-04',desc:'1 paket (kardus sedang) atas nama Dimas. Sudah difoto dan dicatat pos jaga.',state:'ditugaskan',assignee:'Asep — Pos Jaga',created:T-50*M,sla:60,csat:null,
+  tl:[{t:T-50*M,by:'Sistem',x:'Paket dicatat pos jaga — menunggu pemilik mengambil.'}]},
+ {id:'TK-1039',type:'tiket',prio:'normal',from:'Tia',unit:'B-10-05',title:'Lampu kamar mandi berkedip',desc:'Lampu berkedip saat dinyalakan.',state:'dikerjakan',assignee:'Bayu — Teknisi',created:T-26*H,sla:2880,ev:false,csat:null,
+  tl:[{t:T-25*H,by:'Rina — CS / Admin',x:'Diklaim dan ditugaskan ke teknisi.'},{t:T-24*H,by:'Bayu — Teknisi',x:'Dijadwalkan kunjungan besok pagi.'},{t:T-3*H,by:'Bayu — Teknisi',x:'Pengecekan: fitting perlu diganti. Part dipesan.'}]},
+ {id:'TK-1031',type:'tiket',prio:'rendah',from:'Iqbal',unit:'C-01-08',title:'Kunci pintu balkon seret',desc:'Pintu balkon susah dibuka.',state:'selesai',assignee:'Bayu — Teknisi',created:T-72*H,sla:2880,ev:false,csat:5,
+  tl:[{t:T-70*H,by:'Rina — CS / Admin',x:'Ditugaskan ke teknisi.'},{t:T-40*H,by:'Bayu — Teknisi',x:'Pintu diservis, pelumasan rel — selesai. Bukti foto dikirim.'},{t:T-30*H,by:'Sistem',x:'Warga mengonfirmasi selesai — CSAT 5/5.'}]},
+ {id:'BY-2205',type:'bayar',prio:'normal',from:'Hendra',unit:'A-08-12',title:'Verifikasi bukti transfer — iuran Oktober',amount:350000,state:'selesai',assignee:'Sari — Keuangan',created:T-30*H,sla:240,csat:4,pay:{bank:'BCA',sender:'Hendra',on:'17 Okt · 14.40',due:'Iuran Oktober — Rp 350.000'},
+  tl:[{t:T-29*H,by:'Sari — Keuangan',x:'Diverifikasi: nominal & tanggal cocok — status Lunas (seal demo).'},{t:T-29*H,by:'Sistem',x:'Kuitansi + status Lunas dikirim ke warga. CSAT 4/5.'}]},
+ {id:'RP-5502',type:'laporan',prio:'normal',from:'Nadia',unit:'D-03-06',title:'Keran air taman mati',cat:'Fasilitas',desc:'Keran penyiraman taman tidak mengalir.',state:'diteruskan',assignee:'Wachid — Pak RT A',created:T-52*H,sla:240,csat:null,
+  tl:[{t:T-51*H,by:'Wachid — Pak RT A',x:'Laporan diterima dan dicek lokasi.'},{t:T-50*H,by:'Wachid — Pak RT A',x:'Diteruskan ke pengelola sebagai pekerjaan (PB-7698).'}]}
  ],
  sos:[
+  {id:'SOS-312',unit:'D-01-02',cat:'keamanan',state:'terkirim',name:'Hendra',created:T-1*M,
+  tl:[{t:T-1*M,by:'Warga (app)',x:'SOS dikirim — menunggu diterima pos jaga.'}]},
+  {id:'SOS-313',unit:'A-03-01',cat:'medis',state:'terkirim',name:'Bu Ratna',created:T-6*M,
+  tl:[{t:T-6*M,by:'Warga (app)',x:'SOS dikirim — menunggu diterima pos jaga.'}]},
   {id:'SOS-311',unit:'C-04-11',cat:'medis',state:'ditangani',name:'Tegar',created:T-14*M,by:'Asep — Pos Jaga',officer:'Petugas Rian',
-   tl:[{t:T-13*M,by:'Pos jaga',x:'Diterima pos jaga (58 detik).'},{t:T-11*M,by:'Asep — Pos Jaga',x:'Ditangani Petugas Rian — ambulans internal diarahkan (demo).'}]},
-  {id:'SOS-310',unit:'B-10-05',cat:'keamanan',state:'selesai',name:'Tia',created:T-20*H,
-   tl:[{t:T-20*H,by:'Pos jaga',x:'Diterima (41 detik).'},{t:T-20*H,by:'Asep — Pos Jaga',x:'Ditangani: orang tak dikenal membubarkan diri — patroli lanjutan.'},{t:T-19*H,by:'Sistem',x:'Warga mengonfirmasi selesai.'}]}
+  tl:[{t:T-13*M,by:'Pos jaga',x:'Diterima pos jaga (58 detik).'},{t:T-11*M,by:'Asep — Pos Jaga',x:'Ditangani Petugas Rian — ambulans internal diarahkan.'}]},
+ {id:'SOS-310',unit:'B-10-05',cat:'keamanan',state:'selesai',name:'Tia',created:T-20*H,
+  tl:[{t:T-20*H,by:'Pos jaga',x:'Diterima (41 detik).'},{t:T-20*H,by:'Asep — Pos Jaga',x:'Ditangani: orang tak dikenal membubarkan diri — patroli lanjutan.'},{t:T-19*H,by:'Sistem',x:'Warga mengonfirmasi selesai.'}]}
  ],
  works:[
-  {id:'KB-501',title:'Kerja bakti saluran air Blok B',loc:'Belakang Blok B',scope:'RT',state:'disetujui',pic:'Wachid (RT A)',budget:'Kas RT · Rp 250.000 (konsumsi)',proof:false,created:T-96*H,
-   tl:[{t:T-96*H,by:'Wachid (RT A)',x:'Diusulkan — saluran mampet menjelang hujan.'},{t:T-90*H,by:'Hesti (RW)',x:'Disetujui — masuk agenda Sabtu.'}]},
-  {id:'KB-498',title:'Ganti 2 lampu taman depan Blok A',loc:'Taman Blok A',scope:'Pengelola',state:'dikerjakan',pic:'Pengelola — Bayu',budget:'Diteruskan ke pengelola (PB-7710)',proof:false,created:T-70*H,
-   tl:[{t:T-70*H,by:'Pengelola',x:'Disetujui — teknisi mengecek titik lampu.'},{t:T-40*H,by:'Bayu — Teknisi',x:'Dikerjakan: tiang & kabel dicek, lampu dipasang (demo).'}]}
+ {id:'KB-501',title:'Kerja bakti saluran air Blok B',loc:'Belakang Blok B',scope:'RT',state:'disetujui',pic:'Wachid (RT A)',budget:'Kas RT · Rp 250.000 (konsumsi)',proof:false,created:T-96*H,
+  tl:[{t:T-96*H,by:'Wachid (RT A)',x:'Diusulkan — saluran mampet menjelang hujan.'},{t:T-90*H,by:'Hesti (RW)',x:'Disetujui — masuk agenda Sabtu.'}]},
+ {id:'KB-498',title:'Ganti 2 lampu taman depan Blok A',loc:'Taman Blok A',scope:'Pengelola',state:'dikerjakan',pic:'Pengelola — Bayu',budget:'Diteruskan ke pengelola (PB-7710)',proof:false,created:T-70*H,
+  tl:[{t:T-70*H,by:'Pengelola',x:'Disetujui — teknisi mengecek titik lampu.'},{t:T-40*H,by:'Bayu — Teknisi',x:'Dikerjakan: tiang & kabel dicek, lampu dipasang.'}]}
  ],
  acts:[
-  {id:'KG-210',title:'Kerja bakti + sarapan bareng',type:'Kerja bakti',when:'Sab 1 Nov · 07.00',loc:'Taman Blok A',pic:'Wachid (RT A)',quota:40,joined:27,state:'terbit',
-   tl:[{t:T-4*24*H,by:'Wachid (RT A)',x:'Kegiatan dibuat dan diumumkan ke warga Blok A.'}]},
-  {id:'KG-209',title:'Turnamen gaplek antar RT',type:'Olahraga',when:'Min 9 Nov · 15.00',loc:'Lapangan 2',pic:'Hesti (RW)',quota:60,joined:38,state:'terbit',
-   tl:[{t:T-2*24*H,by:'Hesti (RW)',x:'Dibuat bersama koordinator olahraga (demo).'}]}
+ {id:'KG-210',title:'Kerja bakti + sarapan bareng',type:'Kerja bakti',when:'Sab 1 Nov · 07.00',loc:'Taman Blok A',pic:'Wachid (RT A)',quota:40,joined:27,state:'terbit',
+  tl:[{t:T-4*24*H,by:'Wachid (RT A)',x:'Kegiatan dibuat dan diumumkan ke warga Blok A.'}]},
+ {id:'KG-209',title:'Turnamen gaplek antar RT',type:'Olahraga',when:'Min 9 Nov · 15.00',loc:'Lapangan 2',pic:'Hesti (RW)',quota:60,joined:38,state:'terbit',
+  tl:[{t:T-2*24*H,by:'Hesti (RW)',x:'Dibuat bersama koordinator olahraga.'}]}
  ],
  anns:[
-  {id:'AN-88',title:'Pemadaman air bersih Selasa 09.00–13.00',aud:'Semua blok',by:'Hesti (RW)',t:T-26*H,body:'Pemeliharaan pompa air utama. Mohon menampung air lebih awal (demo).'},
-  {id:'AN-87',title:'Jadwal kerja bakti Sabtu pagi',aud:'Blok A & B',by:'Wachid (RT A)',t:T-3*24*H,body:'Berkumpul di taman Blok A pukul 07.00. Peralatan disediakan pengelola (demo).'}
+ {id:'AN-88',title:'Pemadaman air bersih Selasa 09.00–13.00',aud:'Semua blok',by:'Hesti (RW)',t:T-26*H,body:'Pemeliharaan pompa air utama. Mohon menampung air lebih awal.'},
+ {id:'AN-87',title:'Jadwal kerja bakti Sabtu pagi',aud:'Blok A & B',by:'Wachid (RT A)',t:T-3*24*H,body:'Berkumpul di taman Blok A pukul 07.00. Peralatan disediakan pengelola.'}
  ],
  pets:[
-  {id:'PT-31',title:'Lampu penerangan jalur pejalan kaki',phase:'Fase 2 · voting',prog:'Kuorum 40% partisipasi — 37% masuk',up:T-6*24*H},
-  {id:'PT-28',title:'Rak sepeda dekat lift Blok C',phase:'Proyek · dikerjakan',prog:'Tahap 2 dari 3 — pemasangan rangka',up:T-9*24*H},
-  {id:'PT-24',title:'Penambahan CCTV parkir basement',phase:'Usulan baru',prog:'Fase 1 — tanda tangan 41/60 unit',up:T-2*24*H}
+  {id:'PT-31',title:'Lampu penerangan jalur pejalan kaki',phase:'Fase 2 · voting',prog:'Kuorum 40% partisipasi — 37% masuk',up:T-6*24*H,desc:'Usulan penambahan 6 titik lampu di jalur pejalan kaki sisi timur.',hist:[{t:T-6*24*H,by:'Warga (app)',x:'Usulan dibuat — pengumpulan tanda tangan dimulai.'},{t:T-4*24*H,by:'Hesti (RW)',x:'Diverifikasi pengurus — masuk fase voting.'}]},
+  {id:'PT-28',title:'Rak sepeda dekat lift Blok C',phase:'Proyek · dikerjakan',prog:'Tahap 2 dari 3 — pemasangan rangka',up:T-9*24*H,desc:'Pemasangan rak sepeda 12 slot di dekat lift Blok C.',hist:[{t:T-9*24*H,by:'Hesti (RW)',x:'Proyek disetujui — tahap 1 selesai (pondasi).'},{t:T-5*24*H,by:'Pengelola',x:'Tahap 2 dimulai — pemasangan rangka.'}]},
+  {id:'PT-24',title:'Penambahan CCTV parkir basement',phase:'Usulan baru',prog:'Fase 1 — tanda tangan 41/60 unit',up:T-2*24*H,desc:'Penambahan 4 kamera CCTV di area parkir basement.',hist:[{t:T-2*24*H,by:'Warga (app)',x:'Usulan dibuat — tanda tangan berjalan (41/60 unit).'}]}
  ],
  slots:seedSlots(),
  logs:[]
  };
 }
-function load(){try{const r=JSON.parse(localStorage.getItem('puri_console_v2'));if(r&&r.v===1&&r.reqs){if(!r.slots)r.slots=seedSlots();if(typeof r.dark!=='boolean')r.dark=false;return r;}}catch(_){}return null;}
+function load(){try{const r=JSON.parse(localStorage.getItem('puri_console_v2'));if(r&&r.v===1&&r.reqs){if(!Array.isArray(r.slots)||!r.slots.length)r.slots=seedSlots();r.slots.forEach(s=>{if(!s.d)s.d='25';});['sos','works','acts','anns','pets','logs'].forEach(k=>{if(!Array.isArray(r[k]))r[k]=seed()[k];});if(typeof r.dark!=='boolean')r.dark=false;return r;}}catch(_){}return null;}
 let S=load()||seed();
 const slotFor=id=>(S.slots||[]).find(s=>s.id===id);
 const save=()=>localStorage.setItem('puri_console_v2',JSON.stringify(S));
@@ -242,9 +273,13 @@ const getReq=id=>S.reqs.find(r=>r.id===id);
 function log(by,x){S.logs.unshift({t:Date.now(),by:by,x:x});S.logs=S.logs.slice(0,80);}
 function addTl(r,by,x){r.tl.push({t:Date.now(),by:by,x:x});log(by,r.id+': '+x);}
 function toast(x){const t=$('#toast');t.textContent=x;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2600);}
+function toastBtn(x,lbl,fn){const t=$('#toast');t.textContent='';const sp=document.createElement('span');sp.textContent=x;const b=document.createElement('button');b.className='toastb';b.type='button';b.textContent=lbl;b.onclick=()=>{clearTimeout(t._h);t.classList.remove('on');t.textContent='';fn();};t.appendChild(sp);t.appendChild(b);t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>{t.classList.remove('on');t.textContent='';},10000);}
 /* ---------- routing ---------- */
 const FILT={'i-inbox':'all','i-tiket':'tiket','i-bayar':'bayar','i-booking':'booking','i-pekerjaan':'pekerjaan','i-moderasi':'moderasi','i-kiriman':'kiriman','t-lapor':'rep'};
-const TITLES={'i-inbox':['Kotak Masuk','Semua permintaan warga'],'i-tiket':['Tiket & perbaikan','Antrean teknisi'],'i-bayar':['Pembayaran','Verifikasi bukti'],'i-booking':['Booking fasilitas','Konfirmasi slot'],'i-pekerjaan':['Pekerjaan RT/RW','Diteruskan tata kelola'],'i-moderasi':['Moderasi','Laporan komunitas'],'i-kiriman':['Kiriman & tamu','Pos jaga'],'i-sos':['SOS','Papan pos jaga'],'i-kinerja':['Kinerja','SLA & CSAT (demo)'],'i-lain':['Lainnya','Menu & profil'],'i-set':['Pengaturan','Staf, SLA, balasan'],'t-lapor':['Laporan warga','Terima & teruskan'],'t-kegiatan':['Kegiatan','Atur & umumkan'],'t-kerja':['Kerja bakti & aset','Pekerjaan lingkungan'],'t-petisi':['Petisi & proyek','Pantau fase (demo)'],'t-umum':['Pengumuman','Broadcast warga'],'t-lain':['Lainnya','Menu & profil'],'t-set':['Pengaturan RT/RW','Profil & pengurus']};
+let QF='',CFIRM='',LASTVH=null;
+const SCROLLM={};
+const QFLBL={open:'Belum selesai',sla:'Lewat SLA',unassigned:'Belum ditangani'};
+const TITLES={'i-inbox':['Kotak Masuk','Semua permintaan warga'],'i-tiket':['Tiket & perbaikan','Antrean teknisi'],'i-bayar':['Pembayaran','Verifikasi bukti'],'i-booking':['Booking fasilitas','Konfirmasi slot'],'i-pekerjaan':['Pekerjaan RT/RW','Diteruskan tata kelola'],'i-moderasi':['Moderasi','Laporan komunitas'],'i-kiriman':['Kiriman & tamu','Pos jaga'],'i-sos':['SOS','Papan pos jaga'],'i-kinerja':['Kinerja','SLA & CSAT'],'i-lain':['Lainnya','Menu & profil'],'i-set':['Pengaturan','Staf, SLA, balasan'],'t-lapor':['Laporan warga','Terima & teruskan'],'t-kegiatan':['Kegiatan','Atur & umumkan'],'t-kerja':['Kerja bakti & aset','Pekerjaan lingkungan'],'t-petisi':['Petisi & proyek','Pantau fase'],'t-umum':['Pengumuman','Broadcast warga'],'t-lain':['Lainnya','Menu & profil'],'t-set':['Pengaturan RT/RW','Profil & pengurus']};
 const ICON={inbox:'<path d="M4 5h16v14H4z"/><path d="M4 13h4.5l1.5 2h4l1.5-2H20"/>',sos:'<path d="M12 4l9 16H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/>',kin:'<path d="M5 20v-8M12 20V4M19 20v-11"/>',lain:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',doc:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/>',cal:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4"/>',tool:'<path d="M14.5 3.5l6 6-2.2 2.2-6-6z"/><path d="M12.5 8.5L4 17l3 3 8.5-8.5"/>'};
 const TABS={A:[['i-inbox','Masuk','inbox'],['i-sos','SOS','sos'],['i-kinerja','Kinerja','kin'],['i-lain','Lainnya','lain']],B:[['t-lapor','Laporan','doc'],['t-kegiatan','Kegiatan','cal'],['t-kerja','Kerja','tool'],['t-lain','Lainnya','lain']]};
 let VH=(location.hash||'#i-inbox').slice(1),BACK='i-inbox';
@@ -254,15 +289,16 @@ function activeTab(){
  if(S.ws==='B'){if(VH==='t-lapor'||VH==='t-kegiatan'||VH==='t-kerja')return VH;return't-lain';}
  if(VH==='i-sos'||VH==='i-kinerja'||VH==='i-inbox')return VH;return'i-lain';
 }
-function go(h){if(h!==VH)BACK=VH;VH=h;location.hash=h;render();}
+function go(h,q){if(h!==VH)BACK=VH;QF=q||'';VH=h;location.hash=h;render();}
+function back(){const h=(BACK&&BACK!==VH)?BACK:(S.ws==='B'?'t-lapor':'i-inbox');BACK=h;QF='';if(h!==VH){VH=h;location.hash=h;}render();}
 function renderTabs(){
  let h='';
  TABS[S.ws].forEach(x=>{
-  const on=activeTab()===x[0];let b='';
-  if(x[0]==='i-inbox'){const c=S.reqs.filter(r=>r.state==='baru'&&r.type!=='laporan'&&r.type!=='moderasi').length;if(c)b='<span class="b">'+c+'</span>';}
-  if(x[0]==='i-sos'){const c=S.sos.filter(s=>s.state!=='selesai').length;if(c)b='<span class="b">'+c+'</span>';}
-  if(x[0]==='t-lapor'){const c=S.reqs.filter(r=>r.type==='laporan'&&r.state==='baru').length;if(c)b='<span class="b">'+c+'</span>';}
-  h+='<button data-tab="'+x[0]+'" class="'+(on?'on':'')+'" aria-selected="'+on+'"><svg viewBox="0 0 24 24">'+ICON[x[2]]+'</svg>'+x[1]+b+'</button>';
+ const on=activeTab()===x[0];let b='';
+ if(x[0]==='i-inbox'){const c=S.reqs.filter(r=>r.state==='baru'&&r.type!=='laporan'&&r.type!=='moderasi').length;if(c)b='<span class="b">'+c+'</span>';}
+  if(x[0]==='i-sos'){const c=S.sos.filter(s=>s.state==='terkirim').length;if(c)b='<span class="b">'+c+'</span>';}
+ if(x[0]==='t-lapor'){const c=S.reqs.filter(r=>r.type==='laporan'&&r.state==='baru').length;if(c)b='<span class="b">'+c+'</span>';}
+ h+='<button data-tab="'+x[0]+'" class="'+(on?'on':'')+'" aria-selected="'+on+'"><svg viewBox="0 0 24 24">'+ICON[x[2]]+'</svg>'+x[1]+b+'</button>';
  });
  $('#tabs').innerHTML=h;
  $$('#tabs [data-tab]').forEach(b=>b.onclick=()=>go(b.dataset.tab));
@@ -273,20 +309,24 @@ function headHtml(t,sub,o){
  h+='<div class="ttl"><b>'+esc(t)+'</b>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</div>';
  h+='<button class="avatarbtn" id="rc" aria-label="Profil &amp; peran: '+esc(meName())+'">'+esc(meName().split(' — ')[0].charAt(0))+'</button>';
  h+='</header>';return h;}
-function bindHead(to){const b=$('#bk');if(b)b.onclick=()=>go(to);const rc=$('#rc');if(rc)rc.onclick=()=>go(S.ws==='A'?'i-lain':'t-lain');}
+function bindHead(){const b=$('#bk');if(b)b.onclick=back;const rc=$('#rc');if(rc)rc.onclick=()=>go(S.ws==='A'?'i-lain':'t-lain');}
 /* ---------- list & detail ---------- */
 function listFor(f){
  let list=S.reqs.slice();
  if(f==='rep')list=list.filter(r=>r.type==='laporan');
  else if(f!=='all')list=list.filter(r=>r.type===f);
  else list=list.filter(r=>r.type!=='laporan');
+ const openr=r=>!/selesai|ditutup|ditolak|diabaikan|diserahkan/.test(r.state);
+ if(QF==='open')list=list.filter(openr);
+ else if(QF==='sla')list=list.filter(r=>openr(r)&&r.state!=='konfirmasi'&&(Date.now()-r.created)/M>r.sla);
+ else if(QF==='unassigned')list=list.filter(r=>!r.assignee&&r.state==='baru');
  list.sort((a,b)=>(a.state==='baru'?0:1)-(b.state==='baru'?0:1)||b.created-a.created);
  return list;
 }
 function itemHtml(r){
  const pic=r.assignee?r.assignee.split(' — ')[0]:null;
  const mine=!!pic&&meName().indexOf(pic)===0;
- const step=r.state==='baru'?'Klaim':(/ditugaskan|dikerjakan|ditangani|diterima/.test(r.state)?'Lanjutkan':(r.state==='konfirmasi'?'Pantau jadwal':(r.state==='selesai'?'Tunggu warga':(r.state==='diteruskan'?'Dipantau pengelola':'Lihat'))));
+ const step=r.state==='baru'?'Buka':(/ditugaskan|dikerjakan|ditangani|diterima/.test(r.state)?'Lanjutkan':(r.state==='konfirmasi'?'Pantau jadwal':(r.state==='selesai'?'Tunggu warga':(r.state==='diteruskan'?'Dipantau pengelola':'Lihat'))));
  const last=r.tl&&r.tl.length?r.tl[r.tl.length-1].x:'';
  const av=esc((((r.from||'?').trim().charAt(0))||'?').toUpperCase());
  let h='<button class="item" data-item="'+r.id+'"><span class="av">'+av+'</span><span class="grow"><span class="t1">'+esc(r.title)+'</span><div class="t2">'+stChip(r.state)+'<span class="mono">'+r.id+'</span><span>'+esc((TYPELBL[r.type]||'')+(r.from?' · '+r.from:''))+' · '+ago(r.created)+'</span></div>';
@@ -297,189 +337,213 @@ const GROUPS=[['act','Butuh tindakan','Ambil &amp; tangani — belum ada penangg
 function groupOf(r){if(r.state==='baru')return'act';if(/ditugaskan|dikerjakan|ditangani|diterima/.test(r.state))return'run';return'info';}
 function infoItemHtml(a){return '<button class="item" data-go="t-kegiatan"><span class="grow"><span class="t1">'+esc(a.title)+'</span><div class="t2"><span class="chip acc">Info · '+esc(a.type)+'</span><span class="mono">'+a.id+'</span><span>'+esc(a.when)+' · '+a.joined+'/'+a.quota+' peserta</span></div><div class="t2" style="margin-top:5px"><span class="chip">Tanpa tindakan</span><small class="sub" style="margin:0">Kelola di tab Kegiatan</small></div></span></button>';}
 function fokusHtml(){
- const A={cs:[['i-tiket','Tiket: triage'],['i-booking','Konfirmasi booking'],['i-moderasi','Cek moderasi']],
- tek:[['i-tiket','Tiket teknisi'],['i-pekerjaan','Pekerjaan fasilitas']],
- pos:[['i-sos','SOS aktif'],['i-kiriman','Kiriman & tamu'],['i-booking','Jadwal fasilitas']],
- keu:[['i-bayar','Verifikasi bayar']],mod:[['i-moderasi','Laporan komunitas']],
- rt:[['t-lapor','Laporan baru'],['t-kerja','Kerja bakti'],['t-kegiatan','Kegiatan']],
- rw:[['t-lapor','Laporan baru'],['t-petisi','Petisi & proyek'],['t-umum','Pengumuman']]};
+ const A={cs:[['i-tiket','Tiket: triage','open'],['i-booking','Konfirmasi booking','']],
+ tek:[['i-tiket','Tiket teknisi','open'],['i-pekerjaan','Pekerjaan fasilitas','open']],
+ pos:[['i-sos','SOS aktif',''],['i-kiriman','Kiriman & tamu','open'],['i-booking','Jadwal fasilitas','']],
+ keu:[['i-bayar','Verifikasi bayar','open']],mod:[['i-moderasi','Laporan komunitas','open']],
+ rt:[['t-lapor','Laporan baru','open'],['t-kerja','Kerja bakti',''],['t-kegiatan','Kegiatan','']],
+ rw:[['t-lapor','Laporan baru','open'],['t-petisi','Petisi & proyek',''],['t-umum','Pengumuman','']]};
  const list=A[S.role]||A.cs;
- return '<div class="card"><span class="eyebrow">Fokus hari ini · '+esc(meName().split(' — ')[0])+'</span><div class="row" style="margin-top:7px">'+list.map(x=>'<button class="btn ghost sm" data-f="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><p class="honest">Tugas utama saja — semua peran tetap bisa merespons jenis permintaan apa pun.</p></div>';
+ return '<div class="card"><span class="eyebrow">Fokus hari ini · '+esc(meName().split(' — ')[0])+'</span><div class="row" style="margin-top:7px">'+list.map(x=>'<button class="btn ghost sm" data-f="'+x[0]+'" data-q="'+(x[2]||'')+'">'+x[1]+'</button>').join('')+'</div><p class="honest">Pintasan membuka antrean dengan filter siap pakai — semua peran tetap bisa merespons jenis permintaan apa pun.</p></div>';
 }
 function renderList(route){
  const f=FILT[route]||'all',T=TITLES[route]||['Daftar',''];
  const showBack=(route!=='i-inbox'&&route!=='t-lapor');
  const grouped=(route==='i-inbox'||route==='t-lapor');
  let h=headHtml(T[0],T[1],{back:showBack});
+ if(QF&&QFLBL[QF])h+='<div class="fchips" style="position:static;padding-top:8px"><span class="chip acc">Filter · '+QFLBL[QF]+'</span><button class="lnk" data-clearq="1">Hapus filter</button></div>';
  if(route==='i-inbox'){
-  const opts=[['i-inbox','Semua'],['i-tiket','Tiket'],['i-bayar','Bayar'],['i-booking','Booking'],['i-pekerjaan','Pekerjaan'],['i-moderasi','Moderasi'],['i-kiriman','Kiriman']];
-  h+='<div class="fchips">'+opts.map(o=>'<button class="'+(o[0]==='i-inbox'?'on':'')+'" data-f="'+o[0]+'">'+o[1]+'</button>').join('')+'</div>';
+ const opts=[['i-inbox','Semua'],['i-tiket','Tiket'],['i-bayar','Bayar'],['i-booking','Booking'],['i-pekerjaan','Pekerjaan'],['i-moderasi','Moderasi'],['i-kiriman','Kiriman']];
+ h+='<div class="fchips">'+opts.map(o=>'<button class="'+(o[0]==='i-inbox'?'on':'')+'" data-f="'+o[0]+'">'+o[1]+'</button>').join('')+'</div>';
  }
  if(route==='i-inbox'||(route==='t-lapor'&&S.ws==='B'))h+=fokusHtml();
  const list=listFor(f);
  if(grouped){
-  GROUPS.forEach(g=>{
-   const items=list.filter(r=>groupOf(r)===g[0]);
-   if(!items.length&&g[0]!=='act')return;
-   h+='<h2 class="sec">'+g[1]+' <span class="pill">'+items.length+'</span></h2><p class="honest" style="margin:0 16px 2px">'+g[2]+'</p>';
-   let body=items.map(itemHtml).join('');
-   if(g[0]==='info'&&route==='i-inbox'){
-    const up=S.acts.filter(a=>a.state==='terbit');
-    if(up.length)body+=up.map(infoItemHtml).join('');
-   }
-   h+=body?'<div class="card">'+body+'</div>':'<div class="empty">Tidak ada yang menunggu — antrean bersih.</div>';
-  });
+ GROUPS.forEach(g=>{
+  const items=list.filter(r=>groupOf(r)===g[0]);
+  if(!items.length&&g[0]!=='act')return;
+  h+='<h2 class="sec">'+g[1]+' <span class="pill">'+items.length+'</span></h2><p class="honest" style="margin:0 16px 2px">'+g[2]+'</p>';
+  let body=items.map(itemHtml).join('');
+  if(g[0]==='info'&&route==='i-inbox'){
+  const up=S.acts.filter(a=>a.state==='terbit');
+  if(up.length)body+=up.map(infoItemHtml).join('');
+  }
+  h+=body?'<div class="card">'+body+'</div>':'<div class="empty">Tidak ada yang menunggu — antrean bersih.</div>';
+ });
  }else{
-  h+=list.length?'<div class="card">'+list.map(itemHtml).join('')+'</div>':'<div class="empty">Tidak ada permintaan untuk filter ini.</div>';
+ h+=list.length?'<div class="card">'+list.map(itemHtml).join('')+'</div>':'<div class="empty">Tidak ada permintaan untuk filter ini.</div>';
  }
  $('#view').innerHTML=h;
- bindHead('i-lain');
+ bindHead();
  $$('#view [data-item]').forEach(b=>b.onclick=()=>go('d-'+b.dataset.item));
- $$('#view [data-f]').forEach(b=>b.onclick=()=>go(b.dataset.f));
+ $$('#view [data-f]').forEach(b=>b.onclick=()=>go(b.dataset.f,b.dataset.q));
+ $$('#view [data-clearq]').forEach(b=>b.onclick=()=>{QF='';render();});
  $$('#view [data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
 }
 function detailBody(r){
  const chips='<div class="row">'+stChip(r.state)+prioChip(r.prio)+(r.amount?'<span class="chip mono">Rp '+r.amount.toLocaleString('id-ID')+'</span>':'')+(r.cat?'<span class="chip">'+esc(r.cat)+'</span>':'')+(r.assignee?'<span class="chip acc">PIC: '+esc(r.assignee)+'</span>':'')+(r.csat?'<span class="chip good">CSAT '+r.csat+'/5</span>':'')+'</div>';
  const handle=r.assignee?'Ditangani oleh <b>'+esc(r.assignee)+'</b>'+(r.assignee===meName()?' (Anda)':''):'<b>Belum ada yang menangani</b>';
- let h='<div class="card"><div class="row"><span class="eyebrow">'+esc(TYPELBL[r.type]||r.type)+' · '+r.id+'</span></div><h3 style="margin-top:4px">'+esc(r.title)+'</h3><p class="sub">'+esc((r.from||'')+(r.unit?' · '+r.unit:''))+' · '+ago(r.created)+'</p>'+chips+slaBar(r)+'<p class="sub" style="margin-top:8px">'+handle+' — semua peran bisa merespons &amp; ikut membantu (demo).</p><p style="margin:10px 0 0">'+esc(r.desc||'')+'</p></div>';
+ let h='<div class="card"><div class="row"><span class="eyebrow">'+esc(TYPELBL[r.type]||r.type)+' · '+r.id+'</span></div><h3 style="margin-top:4px">'+esc(r.title)+'</h3><p class="sub">'+esc((r.from||'')+(r.unit?' · '+r.unit:''))+' · '+ago(r.created)+'</p>'+chips+slaBar(r)+'<p class="sub" style="margin-top:8px">'+handle+' — tidak dikunci per peran; tindakan tercatat atas nama pelakunya.</p><p style="margin:10px 0 0">'+esc(r.desc||'')+'</p></div>';
+ if(r.type==='bayar')h+=payHtml(r);
  h+='<div class="card"><h3>Riwayat</h3><div class="tl">'+r.tl.slice().reverse().map(e=>{const own=e.by===meName();return '<div class="ev"><span class="d7 '+(own?'b':'n')+'"></span><div><div>'+esc(e.x)+'</div><small>'+esc(own?'Anda · '+e.by:e.by)+' · '+fmtT(e.t)+'</small></div></div>';}).join('')+'</div></div>';
  h+='<div class="card"><h3>Balas & tindakan</h3><div class="acts">'+actsHtml(r)+'</div></div>';
- h+='<div class="card"><h3>Tanggapi thread</h3><textarea class="inp" id="note2" placeholder="Pembaruan singkat untuk tim &amp; warga (demo)"></textarea><button class="btn pri" style="margin-top:10px;width:100%" data-a="noteup">Tambah pembaruan sebagai '+esc(meName().split(' — ')[0])+'</button><p class="honest">Tercatat di riwayat dan terlihat semua tim — respons tidak dikunci per peran.</p></div>';
+ h+='<div class="card"><h3>Tanggapi thread</h3><textarea class="inp" id="note2" placeholder="Pembaruan singkat untuk tim &amp; warga"></textarea><button class="btn pri" style="margin-top:10px;width:100%" data-a="noteup">Tambah pembaruan sebagai '+esc(meName().split(' — ')[0])+'</button><p class="honest">Tercatat di riwayat dan terlihat semua tim.</p></div>';
+ return h;
+}
+function payHtml(r){
+ const p=r.pay||{},done=r.state==='selesai';
+ let h='<div class="card"><span class="eyebrow">Bukti transfer · '+esc(p.bank||'Bank')+'</span><h3 style="margin-top:4px;font-size:24px">Rp '+(r.amount||0).toLocaleString('id-ID')+'</h3><p class="sub">Dari '+(r.from||'warga')+(r.unit?' · '+r.unit:'')+' · '+ago(r.created)+'</p>';
+ h+='<div class="slipbox">'+esc(p.bank||'BCA')+' · transfer masuk<br>a/n <b>'+esc(p.sender||'-')+'</b><br>'+esc(p.on||'-')+'<br>Tagihan: '+esc(p.due||'Iuran')+'<br>Ref: '+esc(r.id)+'</div>';
+ if(done){h+='<div class="sealcard"><span class="seal">✦</span><span class="t"><b>Tersegel — Lunas</b><span class="sub">Diverifikasi oleh '+esc(r.assignee||meName())+' · kuitansi terkirim ke warga.</span></span></div>';}
+ else{h+='<h3 style="margin:14px 0 6px">Cek sebelum menyetujui</h3><div class="tl" style="margin-left:6px"><div class="ev"><span class="d7 g"></span><div>Nominal cocok — Rp '+(r.amount||0).toLocaleString('id-ID')+'</div></div><div class="ev"><span class="d7 '+(p.flag?'w':'g')+'"></span><div>'+(p.flag?'Nama pengirim perlu dicermati':'Nama pengirim cocok dengan akun warga')+'</div></div><div class="ev"><span class="d7 g"></span><div>Periode belum pernah diverifikasi sebelumnya</div></div></div>';
+ if(p.flag)h+='<p class="honest">Perlu dicermati: '+esc(p.flag)+'. Pastikan dulu sebelum menyegel.</p>';}
+ h+='</div>';
  return h;
 }
 function actsHtml(r){
  if(r.type==='laporan')return laporActs(r);
  switch(r.type){
   case 'tiket':{
-   if(r.state==='baru')return '<label class="fl">Tugaskan ke</label><div class="row"><select class="inp grow" id="asg">'+STAFF.map(s=>'<option>'+esc(s)+'</option>').join('')+'</select><button class="btn pri" data-a="claim">Klaim</button></div>'+cannedHtml(true);
-   if(r.state==='ditugaskan'||r.state==='dikerjakan')return cannedHtml(false)+'<label class="fl">Catatan penyelesaian (wajib bila ada bukti)</label><textarea class="inp" id="note" placeholder="cth. Fitting diganti, sudah dites (demo)"></textarea><div class="row"><label class="sub"><input type="checkbox" id="ev"> Bukti foto (demo)</label></div><button class="btn pri" style="margin-top:10px;width:100%" data-a="resolve">Tandai selesai</button>';
-   if(r.state==='selesai')return '<p class="sub">Menunggu konfirmasi warga — ditutup otomatis setelah 48 jam bila tidak ada respons (demo).</p><button class="btn ghost" data-a="close">Tutup sekarang</button>';
-   return '<p class="sub">Ditutup'+(r.csat?' dengan CSAT '+r.csat+'/5':'')+' (demo).</p>';
+  if(r.state==='baru')return '<button class="btn pri" style="width:100%" data-a="claim">Ambil untuk saya — '+esc(meName().split(' — ')[0])+'</button><label class="fl">Atau tugaskan ke</label><div class="row"><select class="inp grow" id="asg">'+STAFF.map(s=>'<option>'+esc(s)+'</option>').join('')+'</select><button class="btn ghost" data-a="assign">Tugaskan</button></div>'+cannedHtml(true);
+  if(r.state==='ditugaskan'||r.state==='dikerjakan')return cannedHtml(false)+'<label class="fl">Catatan penyelesaian (wajib bila ada bukti)</label><textarea class="inp" id="note" placeholder="cth. Fitting diganti, sudah dites"></textarea><div class="row"><label class="sub"><input type="checkbox" id="ev"> Bukti foto</label></div><button class="btn pri" style="margin-top:10px;width:100%" data-a="resolve">Tandai selesai</button>';
+  if(r.state==='selesai')return '<p class="sub">Menunggu konfirmasi warga — ditutup otomatis setelah 48 jam bila tidak ada respons.</p><button class="btn ghost" data-a="close" data-confirm="Tegaskan: tutup tiket sekarang?">Tutup sekarang</button>';
+  return '<p class="sub">Ditutup'+(r.csat?' dengan CSAT '+r.csat+'/5':'')+'.</p>';
   }
   case 'bayar':{
-   if(r.state==='baru'||r.state==='ditugaskan')return '<label class="fl">Alasan (bila reject)</label><input class="inp" id="note" placeholder="cth. Nominal tidak sesuai tagihan (demo)"><div class="row" style="margin-top:10px"><button class="btn pri grow" data-a="payok">Approve — Lunas</button><button class="btn bad grow" data-a="payno">Reject</button></div>'+cannedHtml(false);
-   return '<p class="sub">Verifikasi selesai — '+(r.state==='selesai'?'status Lunas & kuitansi terkirim ke warga (demo).':'ditolak dengan alasan tercatat.')+'</p>'+cannedHtml(false);
+  if(r.state==='baru'||r.state==='ditugaskan')return '<label class="fl">Alasan penolakan (wajib bila reject)</label><input class="inp" id="note" placeholder="cth. Nominal tidak sesuai tagihan"><p class="honest">Alasan ini dikirim ke warga lewat notifikasi bila bukti ditolak.</p><button class="btn pri" style="margin-top:12px;width:100%" data-a="payok" data-confirm="Tegaskan: setujui &amp; segel?">Setujui — lunas &amp; segel kuitansi</button><button class="btn ghost" style="margin-top:8px;width:100%" data-a="payno">Tolak &amp; beri tahu warga</button>'+cannedHtml(false);
+  return '<p class="sub">Verifikasi selesai — '+(r.state==='selesai'?'status Lunas & kuitansi tersegel terkirim ke warga.':'ditolak dengan alasan tercatat & dikirim ke warga.')+'</p>'+cannedHtml(false);
   }
-  case 'booking':{
-   if(r.state==='baru')return '<div class="row"><button class="btn pri grow" data-a="bkok">Konfirmasi slot</button><button class="btn ghost grow" data-a="bkno">Tolak / tawarkan lain</button></div>'+cannedHtml(false);
-   if(r.state==='konfirmasi')return '<button class="btn ghost" style="width:100%" data-a="bkdone">Tandai pemakaian selesai</button>'+cannedHtml(false);
-   return '<p class="sub">Booking '+(r.state==='selesai'?'selesai dipakai — slot kembali tersedia (demo).':'ditolak dengan catatan.')+'</p>'+cannedHtml(false);
-  }
-  case 'moderasi':{
-   if(r.state==='baru')return '<button class="btn pri" style="width:100%" data-a="moddel">Hapus + alasan aturan</button><div class="row" style="margin-top:8px"><button class="btn ghost grow" data-a="modwarn">Tegur penulis</button><button class="btn ghost grow" data-a="modskip">Abaikan</button></div>'+cannedHtml(false);
-   return '<p class="sub">Tindakan tercatat di audit (demo).</p>';
-  }
-  case 'kiriman':{
-   if(r.state==='baru')return '<button class="btn pri" style="width:100%" data-a="hand">Tandai diserahkan ke warga</button><button class="btn ghost" style="margin-top:8px;width:100%" data-a="remind">Ingatkan warga (WA demo)</button>';
-   return '<p class="sub">Paket diserahkan — log pos jaga diperbarui (demo).</p>';
-  }
-  case 'pekerjaan':{
-   if(r.state==='baru')return '<label class="fl">Catatan</label><input class="inp" id="note" placeholder="cth. Lampu & kabel dicek Sabtu pagi (demo)"><div class="row" style="margin-top:10px"><button class="btn pri grow" data-a="wkok">Setujui</button><button class="btn ghost grow" data-a="wkno">Tolak</button></div>';
-   if(r.state==='disetujui')return '<button class="btn pri" style="width:100%" data-a="wkstart">Mulai kerjakan</button>'+cannedHtml(true);
-   if(r.state==='dikerjakan')return '<label class="fl">Catatan penyelesaian + bukti</label><textarea class="inp" id="note" placeholder="cth. 2 lampu taman dipasang — foto bukti terlampir (demo)"></textarea><button class="btn pri" style="margin-top:10px;width:100%" data-a="wkfin">Selesaikan + bukti foto</button>';
-   return '<p class="sub">Selesai — laporan balik dikirim ke RT/RW & warga pelapor (demo).</p>';
-  }
+ case 'booking':{
+  if(r.state==='baru')return '<div class="row"><button class="btn pri grow" data-a="bkok">Konfirmasi slot</button><button class="btn ghost grow" data-a="bkno">Tolak / tawarkan lain</button></div>'+cannedHtml(false);
+  if(r.state==='konfirmasi')return '<button class="btn ghost" style="width:100%" data-a="bkdone">Tandai pemakaian selesai</button>'+cannedHtml(false);
+  return '<p class="sub">Booking '+(r.state==='selesai'?'selesai dipakai — slot kembali tersedia.':'ditolak dengan catatan.')+'</p>'+cannedHtml(false);
+ }
+ case 'moderasi':{
+  if(r.state==='baru')return (r.post?'<div class="post"><span class="eyebrow">Postingan dilaporkan</span><p style="margin:6px 0 3px">“'+esc(r.post.txt)+'”</p><p class="sub mono" style="margin:0">'+esc(r.post.by)+' · '+esc(r.post.grp)+'</p></div>':'')+'<label class="fl">Alasan tindakan (terkirim ke penulis)</label><select class="inp" id="mrs"><option>Jual-beli hanya di Bursa</option><option>Ujaran tidak pantas</option></select><button class="btn pri" style="margin-top:10px;width:100%" data-a="moddel" data-confirm="Tegaskan: hapus postingan?">Hapus + kirim alasan</button><div class="row" style="margin-top:8px"><button class="btn ghost grow" data-a="modwarn">Tegur penulis</button><button class="btn ghost grow" data-a="modskip">Abaikan</button></div>'+cannedHtml(false);
+  return '<p class="sub">Tindakan tercatat di audit atas nama pelakunya.</p>';
+ }
+ case 'kiriman':{
+  if(r.state==='baru'||r.state==='ditugaskan')return '<button class="btn pri" style="width:100%" data-a="hand">Tandai diserahkan ke warga</button><button class="btn ghost" style="margin-top:8px;width:100%" data-a="remind">Ingatkan warga (WA)</button>';
+  return '<p class="sub">Paket diserahkan — log pos jaga diperbarui.</p>';
+ }
+ case 'pekerjaan':{
+  if(r.state==='baru')return '<label class="fl">Catatan</label><input class="inp" id="note" placeholder="cth. Lampu & kabel dicek Sabtu pagi"><div class="row" style="margin-top:10px"><button class="btn pri grow" data-a="wkok">Setujui</button><button class="btn ghost grow" data-a="wkno">Tolak</button></div>';
+  if(r.state==='disetujui')return '<button class="btn pri" style="width:100%" data-a="wkstart">Mulai kerjakan</button>'+cannedHtml(true);
+  if(r.state==='dikerjakan')return '<label class="fl">Catatan penyelesaian + bukti</label><textarea class="inp" id="note" placeholder="cth. 2 lampu taman dipasang — foto bukti terlampir"></textarea><button class="btn pri" style="margin-top:10px;width:100%" data-a="wkfin">Selesaikan + bukti foto</button>';
+  return '<p class="sub">Selesai — laporan balik dikirim ke RT/RW & warga pelapor.</p>';
+ }
  }
  return '';
 }
-function cannedHtml(area){area=area!==false;return '<label class="fl">Balasan cepat</label><select class="inp" id="cn">'+CANNED.map((c,i)=>'<option value="'+i+'">'+esc(c[0]+' — '+c[1].slice(0,40))+'…</option>').join('')+'</select><button class="btn ghost sm" style="margin-top:8px" data-a="sent">Kirim balasan</button>'+(area?'<label class="fl">Atau tulis bebas</label><textarea class="inp" id="note" placeholder="Balasan untuk warga (demo)"></textarea>':'');}
+function cannedHtml(area){area=area!==false;return '<label class="fl">Balasan cepat</label><select class="inp" id="cn">'+CANNED.map((c,i)=>'<option value="'+i+'">'+esc(c[0]+' — '+c[1].slice(0,40))+'…</option>').join('')+'</select><button class="btn ghost sm" style="margin-top:8px" data-a="sent">Kirim balasan</button>'+(area?'<label class="fl">Atau tulis bebas</label><textarea class="inp" id="note" placeholder="Balasan untuk warga"></textarea>':'');}
 function laporActs(r){
  if(r.state==='baru')return '<button class="btn pri" style="width:100%" data-a="lpk">Terima laporan</button><p class="sub" style="margin-top:8px">Setelah diterima: teruskan ke pengelola atau selesaikan langsung di RT.</p>';
- if(r.state==='diterima')return '<button class="btn pri" style="width:100%" data-a="fwd">Teruskan ke pengelola (jadi pekerjaan)</button><button class="btn ghost" style="margin-top:8px;width:100%" data-a="lok">Selesai di RT + catatan</button><label class="fl">Catatan</label><input class="inp" id="note" placeholder="cth. Sudah ditegur & selesai (demo)">';
- if(r.state==='diteruskan')return '<p class="sub">Diteruskan ke pengelola sebagai pekerjaan — pantau di Kotak Masuk pengelola (demo).</p>'+cannedHtml(false);
- return '<p class="sub">Selesai di tingkat RT — warga pelapor sudah diberi jawaban (demo).</p>'+cannedHtml(false);
+ if(r.state==='diterima')return '<button class="btn pri" style="width:100%" data-a="fwd">Teruskan ke pengelola (jadi pekerjaan)</button><button class="btn ghost" style="margin-top:8px;width:100%" data-a="lok">Selesai di RT + catatan</button><label class="fl">Catatan</label><input class="inp" id="note" placeholder="cth. Sudah ditegur & selesai">';
+ if(r.state==='diteruskan')return '<p class="sub">Diteruskan ke pengelola sebagai pekerjaan — pantau di Kotak Masuk pengelola.</p>'+cannedHtml(false);
+ return '<p class="sub">Selesai di tingkat RT — warga pelapor sudah diberi jawaban.</p>'+cannedHtml(false);
 }
 function renderDetail(id){
  const r=getReq(id);
  if(!r){go(S.ws==='B'?'t-lapor':'i-inbox');return;}
- const backTo=(BACK&&BACK!==VH&&!BACK.startsWith('d-'))?BACK:(r.type==='laporan'?'t-lapor':'i-inbox');
  $('#view').innerHTML=headHtml('Detail permintaan','',{back:true})+detailBody(r);
- bindHead(backTo);
- $$('#view [data-a]').forEach(b=>b.onclick=()=>doReqAct(r,b.dataset.a));
+ bindHead();
+ $$('#view [data-a]').forEach(b=>b.onclick=()=>{
+ const a=b.dataset.a;
+ if(b.dataset.confirm&&CFIRM!==r.id+':'+a){CFIRM=r.id+':'+a;b.classList.add('cfirming');b.textContent=b.dataset.confirm;toast('Ketuk sekali lagi untuk menegaskan.');return;}
+ CFIRM='';doReqAct(r,a);
+ });
 }
 function doReqAct(r,a){
  const me=meName(),note=(($('#note')||{}).value||'').trim();
  switch(a){
-  case 'claim':r.assignee=(($('#asg')||{}).value)||STAFF[0];r.state='ditugaskan';addTl(r,me,'Diklaim & ditugaskan ke '+r.assignee+'.');toast('Ditugaskan ke '+r.assignee+' (demo).');break;
-  case 'sent':{const cn=parseInt((($('#cn')||{}).value)||0,10)||0;const txt=note||CANNED[cn][1];addTl(r,me,'Balasan ke warga: “'+txt+'”');toast('Balasan terkirim ke warga (demo).');break;}
-  case 'resolve':if(r.ev&&!($('#ev')||{}).checked){toast('Centang bukti foto dulu — tiket ini wajib bukti.');return;}r.state='selesai';addTl(r,me,(note||'Pekerjaan selesai.')+' — menunggu konfirmasi warga.');break;
-  case 'close':r.state='ditutup';addTl(r,'Sistem','Ditutup oleh petugas setelah 48 jam tanpa respons warga (demo).');break;
-  case 'payok':r.state='selesai';addTl(r,'Sari — Keuangan','Approve — status Lunas, kuitansi terkirim (demo).');break;
-  case 'payno':if(!note){toast('Isi alasan penolakan dulu.');return;}r.state='ditolak';addTl(r,'Sari — Keuangan','Ditolak: '+note);break;
-  case 'bkok':r.state='konfirmasi';{const sl=slotFor(r.id);if(sl)sl.state='konfirmasi';}addTl(r,me,'Slot dikonfirmasi & terkirim ke warga (demo).');break;
-  case 'bkno':r.state='ditolak';{const sl=slotFor(r.id);if(sl)sl.state='batal';}addTl(r,me,'Ditolak / tawaran slot lain dikirim (demo).');break;
-  case 'bkdone':r.state='selesai';{const sl=slotFor(r.id);if(sl)sl.state='selesai';}addTl(r,me,'Pemakaian selesai — fasilitas siap untuk slot berikutnya (demo).');break;
-  case 'noteup':{const v=((($('#note2')||{}).value)||'').trim();if(!v){toast('Tulis pembaruan dulu.');return;}addTl(r,me,'Pembaruan: '+v);toast('Pembaruan tercatat & terlihat tim (demo).');break;}
-  case 'moddel':r.state='dihapus';addTl(r,'Citra — Moderator','Postingan dihapus — aturan: jual-beli hanya di Bursa (demo).');break;
-  case 'modwarn':r.state='ditegur';addTl(r,'Citra — Moderator','Penulis ditegur via pesan sistem (demo).');break;
-  case 'modskip':r.state='diabaikan';addTl(r,'Citra — Moderator','Laporan diabaikan — tidak melanggar aturan.');break;
-  case 'hand':r.state='diserahkan';addTl(r,'Asep — Pos Jaga','Paket diserahkan ke warga — log pos jaga diperbarui.');break;
-  case 'remind':addTl(r,me,'Pengingat pengambilan paket terkirim (WA demo).');toast('Pengingat WA terkirim (demo).');break;
-  case 'wkok':r.state='disetujui';addTl(r,me,note||'Disetujui — masuk jadwal pengelola (demo).');break;
-  case 'wkno':r.state='ditolak';addTl(r,me,'Ditolak: '+(note||'di luar lingkup (demo)'));break;
-  case 'wkstart':r.state='dikerjakan';addTl(r,me,'Mulai dikerjakan (demo).');break;
-  case 'wkfin':r.state='selesai';addTl(r,me,(note||'Pekerjaan selesai')+' — bukti foto terlampir (demo).');break;
-  case 'lpk':r.state='diterima';r.assignee=me;addTl(r,me,'Laporan diterima — lokasi akan dicek.');break;
-  case 'fwd':{r.state='diteruskan';addTl(r,me,'Diteruskan ke pengelola sebagai pekerjaan (demo).');const pid='PB-'+(7740+S.reqs.length);S.reqs.unshift({id:pid,type:'pekerjaan',prio:'normal',from:'RT ('+me+')',title:r.title+' — dari laporan '+r.id,desc:(r.desc||'')+' (diteruskan tata kelola)',state:'baru',assignee:null,created:Date.now(),sla:480,csat:null,tl:[{t:Date.now(),by:me,x:'Diteruskan dari laporan warga '+r.id+'.'}]});toast('Diteruskan ke pengelola sebagai '+pid+' (demo).');break;}
-  case 'lok':r.state='selesai';addTl(r,me,(note||'Diselesaikan di tingkat RT')+' (demo).');break;
-  default:return;
+ case 'claim':r.assignee=me;r.state='ditugaskan';addTl(r,me,'Diambil & dikerjakan oleh '+me+'.');toast('Ditugaskan ke Anda.');break;
+ case 'assign':{const v=(($('#asg')||{}).value)||STAFF[0];r.assignee=v;r.state='ditugaskan';addTl(r,me,'Ditugaskan ke '+v+' oleh '+me+'.');toast('Ditugaskan ke '+v+'.');break;}
+ case 'sent':{const cn=parseInt((($('#cn')||{}).value)||0,10)||0;const txt=note||CANNED[cn][1];addTl(r,me,'Balasan ke warga: “'+txt+'”');toast('Balasan terkirim ke warga.');break;}
+ case 'resolve':if(r.ev&&!($('#ev')||{}).checked){toast('Centang bukti foto dulu — tiket ini wajib bukti.');return;}r.state='selesai';addTl(r,me,(note||'Pekerjaan selesai.')+' — menunggu konfirmasi warga.');break;
+ case 'close':r.state='ditutup';addTl(r,me,'Ditutup setelah 48 jam tanpa respons warga.');break;
+ case 'payok':r.state='selesai';r.assignee=me;addTl(r,me,'Disetujui — status Lunas, kuitansi tersegel & terkirim ke warga.');break;
+ case 'payno':if(!note){toast('Isi alasan penolakan dulu.');return;}r.state='ditolak';r.assignee=me;addTl(r,me,'Ditolak: '+note+'. Alasan dikirim ke warga.');break;
+ case 'bkok':r.state='konfirmasi';{const sl=slotFor(r.id);if(sl)sl.state='konfirmasi';}addTl(r,me,'Slot dikonfirmasi & terkirim ke warga.');break;
+ case 'bkno':r.state='ditolak';{const sl=slotFor(r.id);if(sl)sl.state='batal';}addTl(r,me,'Ditolak / tawaran slot lain dikirim.');break;
+ case 'bkdone':r.state='selesai';{const sl=slotFor(r.id);if(sl)sl.state='selesai';}addTl(r,me,'Pemakaian selesai — fasilitas siap untuk slot berikutnya.');break;
+ case 'noteup':{const v=((($('#note2')||{}).value)||'').trim();if(!v){toast('Tulis pembaruan dulu.');return;}addTl(r,me,'Pembaruan: '+v);toast('Pembaruan tercatat & terlihat tim.');break;}
+ case 'moddel':{const rs=($('#mrs')||{}).value||'jual-beli hanya di Bursa';r.state='dihapus';addTl(r,me,'Postingan dihapus — aturan: '+rs+'. Penulis diberi tahu.');break;}
+ case 'modwarn':r.state='ditegur';addTl(r,me,'Penulis ditegur via pesan sistem.');break;
+ case 'modskip':r.state='diabaikan';addTl(r,me,'Laporan diabaikan — tidak melanggar aturan.');break;
+ case 'hand':r.state='diserahkan';r.assignee=me;addTl(r,me,'Paket diserahkan ke warga — log pos jaga diperbarui.');break;
+ case 'remind':addTl(r,me,'Pengingat pengambilan paket terkirim (WA).');toast('Pengingat WA terkirim.');break;
+ case 'wkok':r.state='disetujui';addTl(r,me,note||'Disetujui — masuk jadwal pengelola.');break;
+ case 'wkno':r.state='ditolak';addTl(r,me,'Ditolak: '+(note||'di luar lingkup'));break;
+ case 'wkstart':r.state='dikerjakan';addTl(r,me,'Mulai dikerjakan.');break;
+ case 'wkfin':r.state='selesai';addTl(r,me,(note||'Pekerjaan selesai')+' — bukti foto terlampir.');break;
+ case 'lpk':r.state='diterima';r.assignee=me;addTl(r,me,'Laporan diterima — lokasi akan dicek.');break;
+ case 'fwd':{r.state='diteruskan';addTl(r,me,'Diteruskan ke pengelola sebagai pekerjaan.');const pid='PB-'+(7740+S.reqs.length);S.reqs.unshift({id:pid,type:'pekerjaan',prio:'normal',from:'RT ('+me+')',title:r.title+' — dari laporan '+r.id,desc:(r.desc||'')+' (diteruskan tata kelola)',state:'baru',assignee:null,created:Date.now(),sla:480,csat:null,tl:[{t:Date.now(),by:me,x:'Diteruskan dari laporan warga '+r.id+'.'}]});toast('Diteruskan ke pengelola sebagai '+pid+'.');break;}
+ case 'lok':r.state='selesai';addTl(r,me,(note||'Diselesaikan di tingkat RT')+'.');break;
+ default:return;
  }
  save();render();
+ if(a==='payok'){const rx=r;toastBtn('Kuitansi tersegel & terkirim ke warga.','Urungkan',()=>{rx.state='baru';rx.assignee=null;if(rx.tl.length>1)rx.tl.pop();save();render();toast('Persetujuan dibatalkan.');});}
 }
 
 /* ---------- SOS ---------- */
 function sosActs(s){
- if(s.state==='terkirim')return '<button class="btn pri" style="width:100%" data-sa="ack" data-id="'+s.id+'">Terima (pos jaga)</button><p class="sub" style="margin-top:8px">Alarm berbunyi bila belum diterima dalam 3 menit (demo).</p>';
- if(s.state==='diterima')return '<label class="fl">Petugas</label><input class="inp" id="of-'+s.id+'" placeholder="Nama petugas (demo)"><button class="btn pri" style="margin-top:10px;width:100%" data-sa="disp" data-id="'+s.id+'">Tugaskan petugas</button>';
- if(s.state==='ditangani')return '<label class="fl">Catatan penanganan</label><input class="inp" id="of-'+s.id+'" placeholder="cth. Kondisi tertangani (demo)"><button class="btn pri" style="margin-top:10px;width:100%" data-sa="fin" data-id="'+s.id+'">Selesaikan — konfirmasi warga</button>';
- return '<p class="sub">Ditutup — warga mengonfirmasi selesai (demo). Log tersimpan.</p>';
+ const calls='<div class="row" style="margin-top:8px"><button class="btn ghost grow" data-sa="callw" data-id="'+s.id+'">☎ Hubungi warga</button><button class="btn ghost grow" data-sa="callp" data-id="'+s.id+'">☎ Pos jaga</button></div>';
+ if(s.state==='terkirim')return '<button class="btn pri" style="width:100%" data-sa="ack" data-id="'+s.id+'">Terima — pos jaga siaga</button><p class="sub" style="margin-top:8px">Menunggu diterima. Alarm otomatis berbunyi setelah 3 menit.</p>'+calls;
+ if(s.state==='diterima')return '<label class="fl">Petugas</label><input class="inp" id="of-'+s.id+'" placeholder="Nama petugas"><button class="btn pri" style="margin-top:10px;width:100%" data-sa="disp" data-id="'+s.id+'">Tugaskan petugas</button>'+calls;
+ if(s.state==='ditangani')return '<label class="fl">Catatan penanganan</label><input class="inp" id="of-'+s.id+'" placeholder="cth. Kondisi tertangani"><button class="btn pri" style="margin-top:10px;width:100%" data-sa="fin" data-id="'+s.id+'" data-confirm="Tegaskan: selesai &amp; minta konfirmasi warga?">Selesaikan — minta konfirmasi warga</button>'+calls;
+ return '<p class="sub">Ditutup — menunggu konfirmasi warga. Log tersimpan.</p>';
 }
 function renderSos(){
- const act=S.sos.filter(s=>s.state!=='selesai').length,done=S.sos.filter(s=>s.state==='selesai').length;
+ const open=S.sos.filter(s=>s.state!=='selesai'),unack=S.sos.filter(s=>s.state==='terkirim').length,done=S.sos.filter(s=>s.state==='selesai').length;
  let h=headHtml('SOS','Papan pos jaga',{});
- h+='<div class="fchips" style="position:static"><span class="chip bad"><span class="d7 b"></span>Aktif '+act+'</span><span class="chip good"><span class="d7 g"></span>Selesai '+done+'</span><span class="pill">ack ≤ 3 mnt</span></div>';
+ h+='<div class="fchips" style="position:static"><span class="chip bad"><span class="d7 b"></span>Belum diterima '+unack+'</span><span class="chip warn"><span class="d7 w"></span>Aktif '+open.length+'</span><span class="chip good"><span class="d7 g"></span>Selesai '+done+'</span></div>';
  h+=S.sos.map(s=>{
-  const over=((Date.now()-s.created)/M>3)&&s.state==='terkirim';
-  return '<div class="sos-card'+(over?' alarm':'')+'"><div class="row"><b class="grow mono">'+esc(s.id)+'</b>'+(over?'<span class="chip bad">LEWAT 3 MENIT</span>':stChip(s.state))+'</div><p class="sub">'+esc(s.name)+' · '+esc(s.unit)+' · '+esc(s.cat)+'</p><p class="sub mono" style="margin:2px 0">⏱ '+ago(s.created)+' sejak dibuat</p><div class="tl">'+s.tl.slice().reverse().map(e=>'<div class="ev"><span class="d7 n"></span><div><div>'+esc(e.x)+'</div><small>'+esc(e.by)+' · '+fmtT(e.t)+'</small></div></div>').join('')+'</div><div class="acts">'+sosActs(s)+'</div></div>';
+ const over=s.state==='terkirim'&&((Date.now()-s.created)/M>3);
+ return '<div class="sos-card'+(over?' over':'')+'" data-sosid="'+esc(s.id)+'" data-created="'+s.created+'" data-state="'+esc(s.state)+'"><div class="row"><b class="grow mono">'+esc(s.id)+'</b><span class="chip bad over-chip"><span class="d7 b"></span>LEWAT 3 MENIT</span>'+stChip(s.state)+'</div><p class="sub">'+esc(s.name)+' · '+esc(s.unit)+' · '+esc(s.cat)+'</p><p class="sub mono" style="margin:2px 0">⏱ <span data-tick="'+s.created+'">'+ago(s.created)+' sejak dibuat</span></p><div class="tl">'+s.tl.slice().reverse().map(e=>'<div class="ev"><span class="d7 n"></span><div><div>'+esc(e.x)+'</div><small>'+esc(e.by)+' · '+fmtT(e.t)+'</small></div></div>').join('')+'</div><div class="acts">'+sosActs(s)+'</div></div>';
  }).join('');
  $('#view').innerHTML=h;
- bindHead('i-inbox');
+ bindHead();
  $$('#view [data-sa]').forEach(b=>b.onclick=()=>{
-  const s=S.sos.find(x=>x.id===b.dataset.id);if(!s)return;const a=b.dataset.sa;
-  if(a==='ack'){s.state='diterima';s.tl.push({t:Date.now(),by:'Pos jaga (app)',x:'Diterima pos jaga — petugas disiapkan.'});toast('SOS diterima pos jaga (demo).');}
-  if(a==='disp'){const v=(($('#of-'+s.id)||{}).value||'').trim()||'Petugas Rian';s.state='ditangani';s.officer=v;s.tl.push({t:Date.now(),by:'Pos jaga (app)',x:'Ditangani '+v+' — bergerak ke lokasi (demo).'});toast('Petugas '+v+' ditugaskan (demo).');}
-  if(a==='fin'){const v=(($('#of-'+s.id)||{}).value||'').trim()||'Kondisi tertangani.';s.state='selesai';s.tl.push({t:Date.now(),by:'Pos jaga (app)',x:v+' — menunggu konfirmasi warga (demo).'});toast('Selesai — warga diminta konfirmasi (demo).');}
-  save();render();
+ const s=S.sos.find(x=>x.id===b.dataset.id);if(!s)return;const a=b.dataset.sa;
+ if(b.dataset.confirm&&CFIRM!==s.id+':'+a){CFIRM=s.id+':'+a;b.classList.add('cfirming');b.textContent=b.dataset.confirm;toast('Ketuk sekali lagi untuk menegaskan.');return;}
+ CFIRM='';
+ if(a==='callw'){toast('Memanggil warga lewat telepon (simulasi).');return;}
+ if(a==='callp'){toast('Memanggil pos jaga (simulasi).');return;}
+ if(a==='ack'){s.state='diterima';s.tl.push({t:Date.now(),by:meName(),x:'Diterima pos jaga — petugas disiapkan.'});toast('SOS diterima pos jaga.');}
+ if(a==='disp'){const v=(($('#of-'+s.id)||{}).value||'').trim()||'Petugas Rian';s.state='ditangani';s.officer=v;s.tl.push({t:Date.now(),by:meName(),x:'Ditangani '+v+' — bergerak ke lokasi.'});toast('Petugas '+v+' ditugaskan.');}
+ if(a==='fin'){const v=(($('#of-'+s.id)||{}).value||'').trim()||'Kondisi tertangani.';s.state='selesai';s.tl.push({t:Date.now(),by:meName(),x:v+' — menunggu konfirmasi warga.'});toast('Selesai — warga diminta konfirmasi.');}
+ save();render();
  });
 }
 /* ---------- Kinerja ---------- */
 function renderKin(){
- const reqs=S.reqs,done=reqs.filter(r=>['selesai','ditutup'].indexOf(r.state)>=0);
- const openN=reqs.filter(r=>['selesai','ditutup','ditolak','diabaikan','diserahkan'].indexOf(r.state)<0).length;
- const breach=reqs.filter(r=>['selesai','ditutup','ditolak','diabaikan','diserahkan'].indexOf(r.state)<0&&(Date.now()-r.created)/M>r.sla).length;
+ const reqs=S.reqs.filter(r=>r.type!=='laporan'),done=reqs.filter(r=>['selesai','ditutup'].indexOf(r.state)>=0);
+ const openN=reqs.filter(r=>['selesai','ditutup','ditolak','diabaikan','diserahkan','konfirmasi'].indexOf(r.state)<0).length;
+ const breach=reqs.filter(r=>['selesai','ditutup','ditolak','diabaikan','diserahkan','konfirmasi'].indexOf(r.state)<0&&(Date.now()-r.created)/M>r.sla).length;
  const cs=done.filter(r=>r.csat);const csat=cs.length?(cs.reduce((a,r)=>a+r.csat,0)/cs.length).toFixed(1):'—';
  const byType={};reqs.forEach(r=>byType[r.type]=(byType[r.type]||0)+1);
  const mx=Math.max.apply(null,Object.keys(byType).map(k=>byType[k]));
- let h=headHtml('Kinerja','SLA & CSAT (demo)',{});
- h+='<div class="stat"><div class="n">'+openN+'</div><div class="l">Permintaan terbuka</div></div>';
- h+='<div class="stat"><div class="n" style="color:'+(breach?'var(--bad)':'var(--good)')+'">'+breach+'</div><div class="l">Lewat SLA — butuh tindakan</div></div>';
- h+='<div class="stat"><div class="n">'+csat+'</div><div class="l">CSAT rata-rata (5 = terbaik)</div></div>';
- h+='<div class="card"><h3>Volume per jenis</h3>'+Object.keys(byType).map(k=>'<div style="margin-top:8px"><div class="row"><span class="grow">'+TYPELBL[k]+'</span><span class="mono">'+byType[k]+'</span></div><div class="bar"><i style="width:'+Math.round(byType[k]/mx*100)+'%"></i></div></div>').join('')+'<p class="honest">Dihitung dari data contoh di perangkat ini (demo).</p></div>';
+ let h=headHtml('Kinerja','SLA & CSAT',{});
+ h+='<button class="stat" data-gof="i-inbox" data-qf="open" style="display:block;width:calc(100% - 28px);text-align:left"><div class="n">'+openN+'</div><div class="l">Permintaan terbuka — ketuk untuk melihat</div></button>';
+ h+='<button class="stat" data-gof="i-inbox" data-qf="sla" style="display:block;width:calc(100% - 28px);text-align:left"><div class="n" style="color:'+(breach?'var(--bad)':'var(--good)')+'">'+breach+'</div><div class="l">Lewat SLA — ketuk untuk melihat</div></button>';
+ h+='<div class="stat"><div class="n">'+csat+'</div><div class="l">CSAT rata-rata · n='+cs.length+' (5 = terbaik)</div></div>';
+ h+='<div class="card"><h3>Volume per jenis</h3>'+Object.keys(byType).map(k=>'<div style="margin-top:8px"><div class="row"><span class="grow">'+TYPELBL[k]+'</span><span class="mono">'+byType[k]+'</span></div><div class="bar"><i style="width:'+Math.round(byType[k]/mx*100)+'%"></i></div></div>').join('')+'<p class="honest">Dihitung dari data contoh di perangkat ini.</p></div>';
  h+='<div class="card"><h3>Aktivitas terakhir</h3><table class="tbl"><tr><th>Waktu</th><th>Oleh</th><th>Catatan</th></tr>'+S.logs.slice(0,8).map(l=>'<tr><td class="mono">'+fmtT(l.t)+'</td><td>'+esc(l.by)+'</td><td>'+esc(l.x)+'</td></tr>').join('')+(S.logs.length?'':'<tr><td colspan="3" class="sub">Belum ada aksi di sesi ini.</td></tr>')+'</table></div>';
- $('#view').innerHTML=h;bindHead('i-inbox');
+ $('#view').innerHTML=h;bindHead();
+ $$('#view [data-gof]').forEach(b=>b.onclick=()=>go(b.dataset.gof,b.dataset.qf||''));
 }
 /* ---------- profil & menu ---------- */
 function applyDark(){document.body.classList.toggle('dark',!!S.dark);}
 function doReset(){if(!confirm('Reset data demo ke kondisi awal?'))return;const kd=!!S.dark;localStorage.removeItem('puri_console_v2');S=seed();S.dark=kd;save();applyDark();go('i-inbox');toast('Data demo direset.');}
 function profileCard(){
  const roleOpts=ROLES.filter(r=>r[2]===S.ws).map(r=>'<option value="'+r[0]+'"'+(r[0]===S.role?' selected':'')+'>'+esc(r[1])+'</option>').join('');
- return '<div class="card"><span class="eyebrow">Masuk sebagai · ruang kerja</span><h3 style="margin-top:4px">'+esc(meName())+'</h3><div class="worksw"><button data-wsa="A" class="'+(S.ws==='A'?'on':'')+'">Pengelola</button><button data-wsa="B" class="'+(S.ws==='B'?'on':'')+'">Tata Kelola RT–RW</button></div><label class="fl">Peran</label><select class="inp" id="role">'+roleOpts+'</select><label class="fl">Properti</label><select class="inp" id="prop"><option'+(S.prop==='Puri'?' selected':'')+'>Puri</option><option'+(S.prop==='Aurora'?' selected':'')+'>Aurora</option><option'+(S.prop==='Nusa'?' selected':'')+'>Nusa</option></select><div class="tg"><span class="lbl" style="font-weight:600;font-size:14.5px">Mode gelap</span><button class="sw" id="dkSw" type="button" aria-checked="'+(S.dark?'true':'false')+'" aria-label="Mode gelap (demo)"></button></div><button class="btn ghost" style="margin-top:12px;width:100%" id="rst">Reset data demo</button><p class="honest">Data contoh tersimpan di perangkat ini (localStorage). Tidak ada server.</p></div>';
+ return '<div class="card"><span class="eyebrow">Masuk sebagai · ruang kerja</span><h3 style="margin-top:4px">'+esc(meName())+'</h3><div class="worksw"><button data-wsa="A" class="'+(S.ws==='A'?'on':'')+'">Pengelola</button><button data-wsa="B" class="'+(S.ws==='B'?'on':'')+'">Tata Kelola RT–RW</button></div><label class="fl">Peran</label><select class="inp" id="role">'+roleOpts+'</select><label class="fl">Properti</label><select class="inp" id="prop"><option'+(S.prop==='Puri'?' selected':'')+'>Puri</option><option'+(S.prop==='Aurora'?' selected':'')+'>Aurora</option><option'+(S.prop==='Nusa'?' selected':'')+'>Nusa</option></select><div class="tg"><span class="lbl" style="font-weight:600;font-size:14.5px">Mode gelap</span><button class="sw" id="dkSw" type="button" aria-checked="'+(S.dark?'true':'false')+'" aria-label="Mode gelap"></button></div><button class="btn ghost" style="margin-top:12px;width:100%" id="rst">Reset data demo</button><p class="honest">Mode demo — semua data &amp; aksi adalah contoh yang tersimpan di perangkat ini. Tidak ada server.</p></div>';
 }
 function bindProfile(){
  $$('#view [data-wsa]').forEach(b=>b.onclick=()=>{const ws=b.dataset.wsa;if(ws===S.ws)return;S.ws=ws;S.role=ws==='B'?'rt':'cs';save();go(ws==='A'?'i-inbox':'t-lapor');});
- const rs=$('#role');if(rs)rs.onchange=()=>{S.role=rs.value;const r=ROLES.find(x=>x[0]===S.role);toast('Masuk sebagai '+r[1]+' (demo).');save();render();};
- const ps=$('#prop');if(ps)ps.onchange=()=>{S.prop=ps.value;save();toast('Properti aktif: '+S.prop+' (demo).');};
- const dk=$('#dkSw');if(dk)dk.onclick=()=>{S.dark=!S.dark;save();applyDark();dk.setAttribute('aria-checked',S.dark?'true':'false');toast(S.dark?'Mode gelap aktif (demo).':'Mode terang aktif (demo).');};
+ const rs=$('#role');if(rs)rs.onchange=()=>{S.role=rs.value;const r=ROLES.find(x=>x[0]===S.role);toast('Masuk sebagai '+r[1]+'.');save();render();};
+ const ps=$('#prop');if(ps)ps.onchange=()=>{S.prop=ps.value;save();toast('Properti aktif: '+S.prop+'.');};
+ const dk=$('#dkSw');if(dk)dk.onclick=()=>{S.dark=!S.dark;save();applyDark();dk.setAttribute('aria-checked',S.dark?'true':'false');toast(S.dark?'Mode gelap aktif.':'Mode terang aktif.');};
  const rb=$('#rst');if(rb)rb.onclick=doReset;
 }
 function renderLain(){
@@ -490,86 +554,92 @@ function renderLain(){
  h+=profileCard();
  h+='<h2 class="sec">Menu</h2><div class="menu">'+menu.map(m=>'<a href="#'+m[0]+'"><b>'+m[1]+'</b><small>'+m[2]+'</small></a>').join('')+'</div>';
  $('#view').innerHTML=h;
- bindHead(S.ws==='A'?'i-inbox':'t-lapor');
+ bindHead();
  bindProfile();
  $$('#view .menu a').forEach(a=>a.onclick=e=>{e.preventDefault();go(a.getAttribute('href').slice(1));});
 }
 /* ---------- booking fasilitas ---------- */
 const BKTIMES=['15.00','16.00','17.00','18.00','19.00','20.00'];
+const BKDATES=[['25','Sab 25 Okt'],['26','Min 26 Okt']];
+let BKDATE='25';
 function renderBooking(){
- const live=S.slots.filter(s=>s.state!=='batal');
- const pend=S.reqs.filter(r=>r.type==='booking'&&r.state==='baru');
+ const lab=(BKDATES.find(x=>x[0]===BKDATE)||BKDATES[0])[1];
+ const live=S.slots.filter(s=>s.state!=='batal'&&(s.d||'25')===BKDATE);
+ const pend=S.reqs.filter(r=>r.type==='booking'&&r.state==='baru'&&(slotFor(r.id)?(slotFor(r.id).d||'25')===BKDATE:true));
  let h=headHtml('Booking fasilitas','Kelola slot & konfirmasi',{back:true});
- h+='<div class="card"><div class="row"><span class="eyebrow">Jadwal hari ini</span><span class="pill">'+live.length+' slot terisi</span></div>';
+ h+='<div class="fchips" style="position:static">'+BKDATES.map(d=>'<button class="'+(d[0]===BKDATE?'on':'')+'" data-bkd="'+d[0]+'">'+d[1]+'</button>').join('')+'</div>';
+ h+='<div class="card"><div class="row"><span class="eyebrow">Jadwal '+esc(lab)+'</span><span class="pill">'+live.length+' slot terisi</span></div>';
  FACILITIES.forEach(f=>{
-  const slots=live.filter(s=>s.f===f.id);
-  h+='<div style="margin-top:12px"><b style="font-size:14.5px">'+esc(f.name)+'</b><div class="row" style="margin-top:6px">';
-  BKTIMES.forEach(t=>{
-   const s=slots.find(x=>x.t===t);
-   if(s)h+='<button class="slot '+(s.state==='konfirmasi'?'ok':s.state==='selesai'?'done':'wait')+'" data-slot="'+esc(s.id)+'">'+t+'<small>'+esc(s.who.split(' — ')[0])+'</small></button>';
-   else h+='<button class="slot free" data-manual="'+f.id+':'+t+'">'+t+'<small>kosong</small></button>';
-  });
-  h+='</div></div>';
+ const slots=live.filter(s=>s.f===f.id);
+ h+='<div style="margin-top:12px"><b style="font-size:14.5px">'+esc(f.name)+'</b><div class="row" style="margin-top:6px">';
+ BKTIMES.forEach(t=>{
+  const s=slots.find(x=>x.t===t);
+   if(s){const ok=s.state==='konfirmasi',done=s.state==='selesai';h+='<button class="slot '+(ok?'ok':done?'done':'wait')+'" data-slot="'+esc(s.id)+'"><b style="font-weight:500">'+t+'</b><small>'+esc(s.who.split(' — ')[0])+'</small><small style="opacity:.8">'+(ok?'konfirmasi':done?'selesai':'menunggu')+'</small></button>';}
+  else h+='<button class="slot free" data-manual="'+f.id+':'+t+'"><b style="font-weight:500">'+t+'</b><small>kosong</small></button>';
  });
+ h+='</div></div>';
+ });
+ h+='<div class="row" style="margin-top:12px"><span class="chip warn">Menunggu</span><span class="chip good">Terkonfirmasi</span><span class="chip">Selesai</span><span class="chip">Kosong</span></div>';
  h+='<p class="honest">Ketuk slot terisi untuk membuka permintaan; slot kosong untuk mencatat booking manual lewat telepon/loket. Pos jaga melihat jadwal ini untuk akses fasilitas.</p></div>';
  if(pend.length){h+='<h2 class="sec">Menunggu konfirmasi <span class="pill">'+pend.length+'</span></h2><div class="card">'+pend.map(itemHtml).join('')+'</div>';}
- h+='<div class="card"><h3>＋ Catat booking manual</h3><label class="fl">Fasilitas</label><select class="inp" id="bfac">'+FACILITIES.map(f=>'<option value="'+f.id+'">'+esc(f.name)+'</option>').join('')+'</select><div class="row" style="margin-top:2px"><div class="grow"><label class="fl">Jam</label><select class="inp" id="btim">'+BKTIMES.map(t=>'<option>'+t+'</option>').join('')+'</select></div><div class="grow"><label class="fl">Nama / unit</label><input class="inp" id="bwho" placeholder="cth. Bu Sari — C-02-01"></div></div><button class="btn pri" style="margin-top:12px;width:100%" id="bgo">Catat &amp; konfirmasi slot</button><p class="honest">Untuk booking lewat telepon/loket — langsung tercatat terkonfirmasi (demo).</p></div>';
+ h+='<div class="card"><h3>＋ Catat booking manual · '+esc(lab)+'</h3><label class="fl">Fasilitas</label><select class="inp" id="bfac">'+FACILITIES.map(f=>'<option value="'+f.id+'">'+esc(f.name)+'</option>').join('')+'</select><div class="row" style="margin-top:2px"><div class="grow"><label class="fl">Jam</label><select class="inp" id="btim">'+BKTIMES.map(t=>'<option>'+t+'</option>').join('')+'</select></div><div class="grow"><label class="fl">Nama / unit</label><input class="inp" id="bwho" placeholder="cth. Bu Sari — C-02-01"></div></div><button class="btn pri" style="margin-top:12px;width:100%" id="bgo">Catat &amp; konfirmasi slot</button><p class="honest">Tanggal mengikuti pilihan di atas. Untuk booking lewat telepon/loket — langsung tercatat terkonfirmasi.</p></div>';
  $('#view').innerHTML=h;
- bindHead('i-lain');
+ bindHead();
+ $$('#view [data-bkd]').forEach(b=>b.onclick=()=>{BKDATE=b.dataset.bkd;render();});
  $$('#view [data-item]').forEach(b=>b.onclick=()=>go('d-'+b.dataset.item));
  $$('#view [data-slot]').forEach(b=>b.onclick=()=>{
-  const s=S.slots.find(x=>x.id===b.dataset.slot)||{id:'?',who:'',state:''};
-  if(getReq(s.id))go('d-'+s.id);
-  else toast(s.id+' · '+s.who+' · '+(s.state==='konfirmasi'?'terkonfirmasi':'menunggu konfirmasi')+' (demo).');
+ const s=S.slots.find(x=>x.id===b.dataset.slot)||{id:'?',who:'',state:''};
+ if(getReq(s.id))go('d-'+s.id);
+ else toast(s.id+' · '+s.who+' · '+(s.state==='konfirmasi'?'terkonfirmasi':'menunggu konfirmasi')+'.');
  });
  $$('#view [data-manual]').forEach(b=>b.onclick=()=>{
-  const p=b.dataset.manual.split(':');
-  $('#bfac').value=p[0];$('#btim').value=p[1];$('#bwho').focus();
-  toast('Slot kosong dipilih — isi nama lalu catat (demo).');
+ const p=b.dataset.manual.split(':');
+ $('#bfac').value=p[0];$('#btim').value=p[1];$('#bwho').focus();
+ toast('Slot kosong dipilih — isi nama lalu catat.');
  });
  $('#bgo').onclick=()=>{
-  const f=$('#bfac').value,t=$('#btim').value,who=$('#bwho').value.trim()||'Walk-in (loket)';
-  if(S.slots.find(s=>s.f===f&&s.t===t&&s.state!=='batal')){toast('Slot sudah terisi — pilih jam lain.');return;}
-  const id='BK-'+(3320+S.slots.length);
-  S.slots.push({f:f,t:t,who:who,id:id,state:'konfirmasi'});
-  S.reqs.unshift({id:id,type:'booking',prio:'normal',from:who,unit:'Loket pengelola',title:'Booking '+FACILITIES.find(x=>x.id===f).name+' — '+t+' (manual)',desc:'Dicatat manual oleh '+meName()+' untuk booking telepon/loket (demo).',state:'konfirmasi',assignee:meName(),created:Date.now(),sla:120,csat:null,tl:[{t:Date.now(),by:meName(),x:'Booking manual dicatat & slot dikonfirmasi (demo).'}]});
-  save();toast('Slot '+t+' tercatat & terkonfirmasi (demo).');render();
+ const f=$('#bfac').value,t=$('#btim').value,who=$('#bwho').value.trim()||'Walk-in (loket)';
+ if(S.slots.find(s=>s.f===f&&s.t===t&&(s.d||'25')===BKDATE&&s.state!=='batal')){toast('Slot sudah terisi — pilih jam lain.');return;}
+ const id='BK-'+(3320+S.slots.length);
+ S.slots.push({f:f,t:t,who:who,id:id,state:'konfirmasi',d:BKDATE});
+ S.reqs.unshift({id:id,type:'booking',prio:'normal',from:who,unit:'Loket pengelola',title:'Booking '+FACILITIES.find(x=>x.id===f).name+' — '+lab+', '+t+' (manual)',desc:'Dicatat manual oleh '+meName()+' untuk booking telepon/loket pada '+lab+'.',state:'konfirmasi',assignee:meName(),created:Date.now(),sla:120,csat:null,tl:[{t:Date.now(),by:meName(),x:'Booking manual dicatat & slot dikonfirmasi.'}]});
+ save();toast('Slot '+lab+' '+t+' tercatat & terkonfirmasi.');render();
  };
 }
 /* ---------- pengaturan A & B ---------- */
 function renderSet(){
  const slas=[['SOS ack','≤ 1 mnt','alarm 3 mnt'],['Tiket tinggi','≤ 30 mnt','CS lead'],['Tiket normal','≤ 2 jam kerja','eskalasi 80%'],['Pembayaran','≤ 4 jam kerja','keuangan lead'],['Booking','≤ 2 jam kerja','konflik same-day'],['Moderasi','≤ 4 jam','moderator lead'],['Pekerjaan RT/RW','≤ 8 jam kerja','jadwal mingguan']];
  let h=headHtml('Pengaturan','Staf, SLA, balasan',{back:true});
- h+='<div class="card"><h3>Staf & peran (demo)</h3><table class="tbl"><tr><th>Nama</th><th>Peran</th><th>Fokus</th></tr>'+[['Rina','CS / Admin','Inbox & triage'],['Bayu','Teknisi','Tiket lapangan'],['Asep','Pos Jaga','SOS, tamu, kiriman'],['Sari','Keuangan','Bukti & tagihan'],['Citra','Moderator','Bursa & laporan']].map(x=>'<tr><td><b>'+x[0]+'</b></td><td>'+x[1]+'</td><td>'+x[2]+'</td></tr>').join('')+'</table></div>';
+ h+='<div class="card"><h3>Staf & peran</h3><table class="tbl"><tr><th>Nama</th><th>Peran</th><th>Fokus</th></tr>'+[['Rina','CS / Admin','Inbox & triage'],['Bayu','Teknisi','Tiket lapangan'],['Asep','Pos Jaga','SOS, tamu, kiriman'],['Sari','Keuangan','Bukti & tagihan'],['Citra','Moderator','Bursa & laporan']].map(x=>'<tr><td><b>'+x[0]+'</b></td><td>'+x[1]+'</td><td>'+x[2]+'</td></tr>').join('')+'</table></div>';
  h+='<div class="card"><h3>SLA standar</h3><table class="tbl"><tr><th>Jenis</th><th>Balasan</th><th>Eskalasi</th></tr>'+slas.map(x=>'<tr><td>'+x[0]+'</td><td class="mono">'+x[1]+'</td><td>'+x[2]+'</td></tr>').join('')+'</table><p class="honest">Nilai default demo — dapat diubah pada layar pengaturan produksi.</p></div>';
  h+='<div class="card"><h3>Balasan cepat</h3>'+CANNED.map(c=>'<div class="row" style="align-items:flex-start;border-top:1px solid rgba(32,24,18,.07);padding:8px 0"><span class="chip" style="flex:none">'+esc(c[0])+'</span><span class="sub grow" style="margin:0">'+esc(c[1])+'</span></div>').join('')+'</div>';
- $('#view').innerHTML=h;bindHead('i-lain');
+ $('#view').innerHTML=h;bindHead();
 }
 function renderSetB(){
  let h=headHtml('Pengaturan RT/RW','Profil & pengurus',{back:true});
- h+='<div class="card"><h3>Pengurus aktif</h3><table class="tbl"><tr><th>Nama</th><th>Jabatan</th><th>Wilayah</th></tr>'+[['Wachid','Pak RT','Blok A'],['Bu Ratna','Sekretaris RT','Blok A'],['Hesti','Ketua RW','Lingkup Puri'],['Dedi','Koord. keamanan','Lingkup Puri']].map(x=>'<tr><td><b>'+x[0]+'</b></td><td>'+x[1]+'</td><td>'+x[2]+'</td></tr>').join('')+'</table><p class="honest">Hak akses per blok (demo).</p></div>';
+ h+='<div class="card"><h3>Pengurus aktif</h3><table class="tbl"><tr><th>Nama</th><th>Jabatan</th><th>Wilayah</th></tr>'+[['Wachid','Pak RT','Blok A'],['Bu Ratna','Sekretaris RT','Blok A'],['Hesti','Ketua RW','Lingkup Puri'],['Dedi','Koord. keamanan','Lingkup Puri']].map(x=>'<tr><td><b>'+x[0]+'</b></td><td>'+x[1]+'</td><td>'+x[2]+'</td></tr>').join('')+'</table><p class="honest">Hak akses per blok.</p></div>';
  h+='<div class="card"><h3>Kanal & kebiasaan</h3><table class="tbl"><tr><th>Hal</th><th>Kebijakan</th></tr>'+[['Balasan laporan','≤ 4 jam kerja'],['Kerja bakti','Sabtu pertama tiap bulan'],['Pengumuman','Lewat app, bukan grup pribadi'],['Ke pengelola','Lewat “Teruskan” agar tercatat SLA']].map(x=>'<tr><td>'+x[0]+'</td><td>'+x[1]+'</td></tr>').join('')+'</table></div>';
- $('#view').innerHTML=h;bindHead('t-lain');
+ $('#view').innerHTML=h;bindHead();
 }
 /* ---------- kegiatan ---------- */
 function renderKeg(){
- const form='<div class="card"><h3>＋ Buat kegiatan</h3><label class="fl">Nama kegiatan</label><input class="inp" id="kgT" placeholder="cth. Kerja bakti taman Blok A"><label class="fl">Jenis</label><select class="inp" id="kgJ"><option>Kerja bakti</option><option>Olahraga</option><option>Sosial</option><option>Keamanan</option></select><label class="fl">Waktu</label><input class="inp" id="kgW" placeholder="cth. Sab 8 Nov · 07.00"><label class="fl">Tempat</label><input class="inp" id="kgL" placeholder="cth. Taman Blok A"><div class="row"><div class="grow"><label class="fl">PIC</label><input class="inp" id="kgP" value="'+esc(meName())+'"></div><div style="width:110px"><label class="fl">Kuota</label><input class="inp" id="kgQ" inputmode="numeric" value="30"></div></div><button class="btn pri" style="margin-top:12px;width:100%" id="kgGo">Terbitkan + umumkan</button><p class="honest">Terbit = tampil di aplikasi warga & daftar pengumuman (demo).</p></div>';
+ const form='<div class="card"><h3>＋ Buat kegiatan</h3><label class="fl">Nama kegiatan</label><input class="inp" id="kgT" placeholder="cth. Kerja bakti taman Blok A"><label class="fl">Jenis</label><select class="inp" id="kgJ"><option>Kerja bakti</option><option>Olahraga</option><option>Sosial</option><option>Keamanan</option></select><label class="fl">Waktu</label><input class="inp" id="kgW" placeholder="cth. Sab 8 Nov · 07.00"><label class="fl">Tempat</label><input class="inp" id="kgL" placeholder="cth. Taman Blok A"><div class="row"><div class="grow"><label class="fl">PIC</label><input class="inp" id="kgP" value="'+esc(meName())+'"></div><div style="width:110px"><label class="fl">Kuota</label><input class="inp" id="kgQ" inputmode="numeric" value="30"></div></div><button class="btn pri" style="margin-top:12px;width:100%" id="kgGo">Terbitkan + umumkan</button><p class="honest">Terbit = tampil di aplikasi warga & daftar pengumuman.</p></div>';
  const items=S.acts.map(g=>{
-  const pct=Math.min(100,Math.round(g.joined/g.quota*100));
-  return '<div class="card"><div class="row"><h3 class="grow" style="margin:0">'+esc(g.title)+'</h3>'+stChip(g.state)+'</div><p class="sub">'+esc(g.type)+' · '+esc(g.when)+' · '+esc(g.loc)+'</p><p class="sub">PIC: '+esc(g.pic)+' · Kuota '+g.joined+'/'+g.quota+'</p><div class="bar"><i style="width:'+pct+'%"></i></div><div class="tl">'+g.tl.slice().reverse().map(e=>'<div class="ev"><span class="d7 n"></span><div><div>'+esc(e.x)+'</div><small>'+esc(e.by)+' · '+fmtT(e.t)+'</small></div></div>').join('')+'</div><div class="row" style="margin-top:10px"><button class="btn ghost sm grow" data-ka="ann" data-id="'+g.id+'">Umumkan ulang</button><button class="btn pri sm grow" data-ka="done" data-id="'+g.id+'">Tandai selesai</button></div></div>';
+ const pct=Math.min(100,Math.round(g.joined/g.quota*100));
+ return '<div class="card"><div class="row"><h3 class="grow" style="margin:0">'+esc(g.title)+'</h3>'+stChip(g.state)+'</div><p class="sub">'+esc(g.type)+' · '+esc(g.when)+' · '+esc(g.loc)+'</p><p class="sub">PIC: '+esc(g.pic)+' · Kuota '+g.joined+'/'+g.quota+'</p><div class="bar"><i style="width:'+pct+'%"></i></div><div class="tl">'+g.tl.slice().reverse().map(e=>'<div class="ev"><span class="d7 n"></span><div><div>'+esc(e.x)+'</div><small>'+esc(e.by)+' · '+fmtT(e.t)+'</small></div></div>').join('')+'</div><div class="row" style="margin-top:10px"><button class="btn ghost sm grow" data-ka="ann" data-id="'+g.id+'">Umumkan ulang</button><button class="btn pri sm grow" data-ka="done" data-id="'+g.id+'">Tandai selesai</button></div></div>';
  }).join('');
  $('#view').innerHTML=headHtml('Kegiatan','Atur & umumkan',{})+form+items;
- bindHead('t-lain');
+ bindHead();
  $('#kgGo').onclick=()=>{
-  const t=$('#kgT').value.trim();if(!t){toast('Isi nama kegiatan dulu.');return;}
-  const g={id:'KG-'+(220+S.acts.length),title:t,type:$('#kgJ').value,when:$('#kgW').value.trim()||'Sabtu ini',loc:$('#kgL').value.trim()||'Lingkungan',pic:$('#kgP').value.trim()||meName(),quota:parseInt($('#kgQ').value,10)||30,joined:0,state:'terbit',tl:[{t:Date.now(),by:meName(),x:'Kegiatan dibuat & diumumkan ke warga (demo).'}]};
-  S.acts.unshift(g);S.anns.unshift({id:'AN-'+(89+S.anns.length),title:'Kegiatan baru: '+t,aud:'Semua blok',by:meName(),t:Date.now(),body:g.when+' · '+g.loc+' — daftar di aplikasi warga (demo).'});save();toast('Kegiatan terbit & diumumkan (demo).');render();
+ const t=$('#kgT').value.trim();if(!t){toast('Isi nama kegiatan dulu.');return;}
+ const g={id:'KG-'+(220+S.acts.length),title:t,type:$('#kgJ').value,when:$('#kgW').value.trim()||'Sabtu ini',loc:$('#kgL').value.trim()||'Lingkungan',pic:$('#kgP').value.trim()||meName(),quota:parseInt($('#kgQ').value,10)||30,joined:0,state:'terbit',tl:[{t:Date.now(),by:meName(),x:'Kegiatan dibuat & diumumkan ke warga.'}]};
+ S.acts.unshift(g);announce('Kegiatan baru: '+t,g.when+' · '+g.loc+' — daftar di aplikasi warga.',audFromLoc(g.loc));save();toast('Kegiatan terbit & diumumkan ke '+audFromLoc(g.loc)+'.');render();
  };
  $$('#view [data-ka]').forEach(b=>b.onclick=()=>{
-  const g=S.acts.find(x=>x.id===b.dataset.id);if(!g)return;
-  if(b.dataset.ka==='ann'){S.anns.unshift({id:'AN-'+(89+S.anns.length),title:'Kegiatan: '+g.title,aud:'Semua blok',by:meName(),t:Date.now(),body:g.when+' · '+g.loc+' (demo).'});save();toast('Pengingat kegiatan diumumkan (demo).');}
-  if(b.dataset.ka==='done'){g.state='selesai';g.tl.push({t:Date.now(),by:meName(),x:'Kegiatan selesai — terima kasih warga (demo).'});save();toast('Kegiatan ditandai selesai (demo).');}
-  render();
+ const g=S.acts.find(x=>x.id===b.dataset.id);if(!g)return;
+ if(b.dataset.ka==='ann'){announce('Kegiatan: '+g.title,g.when+' · '+g.loc+'.',audFromLoc(g.loc));save();toast('Pengingat kegiatan diumumkan ke '+audFromLoc(g.loc)+'.');}
+ if(b.dataset.ka==='done'){g.state='selesai';g.tl.push({t:Date.now(),by:meName(),x:'Kegiatan selesai — terima kasih warga.'});save();toast('Kegiatan ditandai selesai.');}
+ render();
  });
 }
 /* ---------- kerja bakti ---------- */
@@ -577,91 +647,103 @@ function renderKerja(){
  const phase=['usul','disetujui','dikerjakan','selesai'];
  const ph=g=>'<div class="phase">'+phase.map(p=>'<span class="st '+(g.state===p?'on':'')+'"><span class="d7"></span>'+STLBL[p]+'</span>').join('')+'</div>';
  const acts=g=>{
-  if(g.state==='usul')return '<div class="row" style="margin-top:10px"><button class="btn pri sm grow" data-wa="ok" data-id="'+g.id+'">Setujui</button><button class="btn ghost sm grow" data-wa="no" data-id="'+g.id+'">Tolak</button></div>';
-  if(g.state==='disetujui')return '<button class="btn pri sm" style="margin-top:10px;width:100%" data-wa="start" data-id="'+g.id+'">Mulai kerjakan</button>';
-  if(g.state==='dikerjakan')return '<div class="row" style="margin-top:10px"><label class="sub"><input type="checkbox" id="pf-'+g.id+'"> Bukti foto</label><button class="btn pri sm grow" data-wa="fin" data-id="'+g.id+'">Selesaikan</button></div>';
-  return '<p class="sub" style="margin-top:8px">Selesai '+(g.proof?'dengan bukti foto':'dengan bukti tercatat')+' — laporan balik dikirim (demo).</p>';
+ if(g.state==='usul')return '<div class="row" style="margin-top:10px"><button class="btn pri sm grow" data-wa="ok" data-id="'+g.id+'">Setujui</button><button class="btn ghost sm grow" data-wa="no" data-id="'+g.id+'">Tolak</button></div>';
+ if(g.state==='disetujui')return '<button class="btn pri sm" style="margin-top:10px;width:100%" data-wa="start" data-id="'+g.id+'">Mulai kerjakan</button>';
+ if(g.state==='dikerjakan')return '<div class="row" style="margin-top:10px"><label class="sub"><input type="checkbox" id="pf-'+g.id+'"> Bukti foto</label><button class="btn pri sm grow" data-wa="fin" data-id="'+g.id+'">Selesaikan</button></div>';
+ return '<p class="sub" style="margin-top:8px">Selesai '+(g.proof?'dengan bukti foto':'dengan bukti tercatat')+' — laporan balik dikirim.</p>';
  };
- const form='<div class="card"><h3>＋ Usulkan kerja bakti / pekerjaan</h3><label class="fl">Judul</label><input class="inp" id="kbT" placeholder="cth. Bersihkan saluran air Blok B"><label class="fl">Lokasi</label><input class="inp" id="kbL" placeholder="cth. Belakang Blok B"><label class="fl">Lingkup</label><select class="inp" id="kbS"><option>RT</option><option>Pengelola</option></select><label class="fl">Anggaran / catatan</label><input class="inp" id="kbB" placeholder="cth. Kas RT · Rp 250.000 konsumsi"><button class="btn pri" style="margin-top:12px;width:100%" id="kbGo">Usulkan</button><p class="honest">Lingkup pengelola otomatis diteruskan ke console pengelola setelah disetujui (demo).</p></div>';
+ const form='<div class="card"><h3>＋ Usulkan kerja bakti / pekerjaan</h3><label class="fl">Judul</label><input class="inp" id="kbT" placeholder="cth. Bersihkan saluran air Blok B"><label class="fl">Lokasi</label><input class="inp" id="kbL" placeholder="cth. Belakang Blok B"><label class="fl">Lingkup</label><select class="inp" id="kbS"><option>RT</option><option>Pengelola</option></select><label class="fl">Anggaran / catatan</label><input class="inp" id="kbB" placeholder="cth. Kas RT · Rp 250.000 konsumsi"><button class="btn pri" style="margin-top:12px;width:100%" id="kbGo">Usulkan</button><p class="honest">Lingkup pengelola otomatis diteruskan ke console pengelola setelah disetujui.</p></div>';
  const items=S.works.map(g=>'<div class="card"><div class="row"><h3 class="grow" style="margin:0">'+esc(g.title)+'</h3><span class="chip '+(g.scope==='Pengelola'?'acc':'')+'">'+esc(g.scope==='Pengelola'?'Lingkup pengelola':'Lingkup RT')+'</span></div><p class="sub">'+esc(g.loc)+' · PIC: '+esc(g.pic)+'</p><p class="sub mono">'+esc(g.budget)+'</p>'+ph(g)+acts(g)+'</div>').join('');
  $('#view').innerHTML=headHtml('Kerja bakti & aset','Pekerjaan lingkungan',{})+form+items;
- bindHead('t-lain');
+ bindHead();
  $('#kbGo').onclick=()=>{
-  const t=$('#kbT').value.trim();if(!t){toast('Isi judul pekerjaan dulu.');return;}
-  S.works.unshift({id:'KB-'+(510+S.works.length),title:t,loc:$('#kbL').value.trim()||'Lingkungan',scope:$('#kbS').value,state:'usul',pic:meName(),budget:$('#kbB').value.trim()||'Belum dianggarkan',proof:false,created:Date.now(),tl:[{t:Date.now(),by:meName(),x:'Diusulkan ke pengurus (demo).'}]});
-  save();toast('Usulan dibuat — menunggu persetujuan (demo).');render();
+ const t=$('#kbT').value.trim();if(!t){toast('Isi judul pekerjaan dulu.');return;}
+ S.works.unshift({id:'KB-'+(510+S.works.length),title:t,loc:$('#kbL').value.trim()||'Lingkungan',scope:$('#kbS').value,state:'usul',pic:meName(),budget:$('#kbB').value.trim()||'Belum dianggarkan',proof:false,created:Date.now(),tl:[{t:Date.now(),by:meName(),x:'Diusulkan ke pengurus.'}]});
+ save();toast('Usulan dibuat — menunggu persetujuan.');render();
  };
  $$('#view [data-wa]').forEach(b=>b.onclick=()=>{
-  const g=S.works.find(x=>x.id===b.dataset.id);if(!g)return;const a=b.dataset.wa;
-  if(a==='ok'){g.state='disetujui';g.tl.push({t:Date.now(),by:meName(),x:'Disetujui pengurus (demo).'});if(g.scope==='Pengelola'){const pid='PB-'+(7730+S.reqs.length);S.reqs.unshift({id:pid,type:'pekerjaan',prio:'normal',from:'Tata Kelola ('+meName()+')',title:g.title+' — lingkup pengelola',desc:'Dari kerja bakti '+g.id+' · '+g.loc+'. Anggaran: '+g.budget+'.',state:'baru',assignee:null,created:Date.now(),sla:480,csat:null,tl:[{t:Date.now(),by:meName(),x:'Diteruskan ke console pengelola sebagai '+pid+' (demo).'}]});toast('Disetujui — diteruskan ke pengelola ('+pid+') (demo).');}else toast('Kerja bakti disetujui (demo).');}
-  if(a==='no'){g.state='ditolak';g.tl.push({t:Date.now(),by:meName(),x:'Ditolak — perlu usulan ulang (demo).'});toast('Usulan ditolak (demo).');}
-  if(a==='start'){g.state='dikerjakan';g.tl.push({t:Date.now(),by:meName(),x:'Mulai dikerjakan warga & PIC (demo).'});toast('Pekerjaan dimulai (demo).');}
-  if(a==='fin'){g.state='selesai';g.proof=!!($('#pf-'+g.id)||{}).checked;g.tl.push({t:Date.now(),by:meName(),x:'Selesai'+(g.proof?' — bukti foto terlampir':'')+' (demo).'});if(g.scope==='Pengelola'){const rel=S.reqs.find(r=>r.type==='pekerjaan'&&r.title.indexOf(g.title)>=0&&r.state!=='selesai');if(rel){rel.state='selesai';rel.tl.push({t:Date.now(),by:meName(),x:'Ditutup: kerja bakti '+g.id+' melaporkan selesai (demo).'});}}toast('Pekerjaan selesai — laporan balik dikirim (demo).');}
-  save();render();
+ const g=S.works.find(x=>x.id===b.dataset.id);if(!g)return;const a=b.dataset.wa;
+ if(a==='ok'){g.state='disetujui';g.tl.push({t:Date.now(),by:meName(),x:'Disetujui pengurus.'});if(g.scope==='Pengelola'){const pid='PB-'+(7730+S.reqs.length);S.reqs.unshift({id:pid,type:'pekerjaan',prio:'normal',from:'Tata Kelola ('+meName()+')',title:g.title+' — lingkup pengelola',desc:'Dari kerja bakti '+g.id+' · '+g.loc+'. Anggaran: '+g.budget+'.',state:'baru',assignee:null,created:Date.now(),sla:480,csat:null,tl:[{t:Date.now(),by:meName(),x:'Diteruskan ke console pengelola sebagai '+pid+'.'}]});toast('Disetujui — diteruskan ke pengelola ('+pid+').');}else toast('Kerja bakti disetujui.');}
+ if(a==='no'){g.state='ditolak';g.tl.push({t:Date.now(),by:meName(),x:'Ditolak — perlu usulan ulang.'});toast('Usulan ditolak.');}
+ if(a==='start'){g.state='dikerjakan';g.tl.push({t:Date.now(),by:meName(),x:'Mulai dikerjakan warga & PIC.'});toast('Pekerjaan dimulai.');}
+ if(a==='fin'){g.state='selesai';g.proof=!!($('#pf-'+g.id)||{}).checked;g.tl.push({t:Date.now(),by:meName(),x:'Selesai'+(g.proof?' — bukti foto terlampir':'')+'.'});if(g.scope==='Pengelola'){const rel=S.reqs.find(r=>r.type==='pekerjaan'&&r.title.indexOf(g.title)>=0&&r.state!=='selesai');if(rel){rel.state='selesai';rel.tl.push({t:Date.now(),by:meName(),x:'Ditutup: kerja bakti '+g.id+' melaporkan selesai.'});}}toast('Pekerjaan selesai — laporan balik dikirim.');}
+ save();render();
  });
 }
 /* ---------- petisi ---------- */
 function renderPet(){
- let h=headHtml('Petisi & proyek','Pantau fase (demo)',{back:true});
- h+='<div class="card"><span class="pill">Kuorum: 40% partisipasi unit (demo)</span></div>';
- h+=S.pets.map(p=>'<div class="card"><div class="row"><h3 class="grow" style="margin:0">'+esc(p.title)+'</h3><span class="chip acc">'+esc(p.phase)+'</span></div><p class="sub">'+esc(p.prog)+'</p><p class="sub mono">Update: '+ago(p.up)+'</p><div class="row" style="margin-top:10px"><button class="btn ghost sm grow" data-pa="det" data-id="'+p.id+'">Buka detail</button><button class="btn sm grow" data-pa="ping" data-id="'+p.id+'">Ingatkan tahap</button></div></div>').join('');
- h+='<p class="honest" style="margin:12px 16px">Console hanya memantau fase; tanda tangan, voting, dan detail proyek dikelola di aplikasi warga (demo).</p>';
- $('#view').innerHTML=h;bindHead('t-lain');
+ let h=headHtml('Petisi & proyek','Pantau fase',{back:true});
+ h+='<div class="card"><span class="pill">Kuorum: 40% partisipasi unit</span></div>';
+ h+=S.pets.map(p=>'<div class="card"><div class="row"><h3 class="grow" style="margin:0">'+esc(p.title)+'</h3><span class="chip acc">'+esc(p.phase)+'</span></div><p class="sub">'+esc(p.prog)+'</p><p class="sub mono">Update: '+ago(p.up)+'</p><div class="row" style="margin-top:10px"><button class="btn sm grow" data-pa="det" data-id="'+p.id+'">Buka detail</button><button class="btn ghost sm grow" data-pa="ping" data-id="'+p.id+'">Ingatkan tahap</button></div><div class="petx" id="px-'+p.id+'" hidden><p class="sub" style="margin-top:0">'+esc(p.desc||'')+'</p><div class="tl">'+(p.hist||[]).slice().reverse().map(e=>'<div class="ev"><span class="d7 n"></span><div><div>'+esc(e.x)+'</div><small>'+esc(e.by)+' · '+fmtD(e.t)+' '+fmtT(e.t)+'</small></div></div>').join('')+'</div><p class="honest">Tanda tangan & voting dilakukan di aplikasi warga — console memantau fase.</p></div></div>').join('');
+ h+='<p class="honest" style="margin:12px 16px">Console hanya memantau fase; tanda tangan, voting, dan detail proyek dikelola di aplikasi warga.</p>';
+ $('#view').innerHTML=h;bindHead();
  $$('#view [data-pa]').forEach(b=>b.onclick=()=>{
-  const p=S.pets.find(x=>x.id===b.dataset.id);if(!p)return;
-  if(b.dataset.pa==='det')toast(p.id+' — '+p.phase+': '+p.prog+' (demo).');
-  else{S.anns.unshift({id:'AN-'+(89+S.anns.length),title:'Pengingat: '+p.title,aud:'Semua blok',by:meName(),t:Date.now(),body:'Tahap saat ini: '+p.phase+'. '+p.prog+' (demo).'});save();toast('Pengingat tahap diumumkan (demo).');}
+ const p=S.pets.find(x=>x.id===b.dataset.id);if(!p)return;
+ if(b.dataset.pa==='det'){const x=$('#px-'+p.id);if(!x)return;x.hidden=!x.hidden;b.textContent=x.hidden?'Buka detail':'Tutup detail';}
+ else{announce('Pengingat: '+p.title,'Tahap saat ini: '+p.phase+'. '+p.prog+'.','Semua blok');save();toast('Pengingat tahap diumumkan ke ±'+ANN_AUD['Semua blok']+' unit.');}
  });
 }
 /* ---------- pengumuman ---------- */
+const ANN_AUD={'Semua blok':1800,'Blok A':480,'Blok B':520,'Blok C':430,'Blok D':370,'Blok A & B':1000};
+function audFromLoc(s){const m=String(s||'').match(/Blok\s+([A-D])/i);return m?'Blok '+m[1].toUpperCase():'Semua blok';}
+function announce(t,body,aud){S.anns.unshift({id:'AN-'+(89+S.anns.length),title:t,aud:aud,by:meName(),t:Date.now(),body:body});}
 function renderUmum(){
  let h=headHtml('Pengumuman','Broadcast warga',{back:true});
- h+='<div class="card"><h3>＋ Pengumuman warga</h3><label class="fl">Judul</label><input class="inp" id="anT" placeholder="cth. Gotong royong Minggu pagi"><label class="fl">Audiens</label><select class="inp" id="anA"><option>Semua blok</option><option>Blok A</option><option>Blok B</option><option>Blok C</option><option>Blok D</option><option>Blok A &amp; B</option></select><label class="fl">Isi singkat</label><input class="inp" id="anB" placeholder="cth. Berkumpul 07.00 di taman (demo)"><button class="btn pri" style="margin-top:12px;width:100%" id="anGo">Terbitkan pengumuman</button><p class="honest">Muncul di Beranda warga & notifikasi (demo).</p></div>';
- h+='<div class="card"><h3>Riwayat</h3>'+S.anns.map(a=>'<div style="border-top:1px solid rgba(32,24,18,.07);padding:9px 0"><div class="row"><b class="grow" style="font-size:14.5px">'+esc(a.title)+'</b><span class="chip">'+esc(a.aud)+'</span></div><p class="sub" style="margin:3px 0 0">'+esc(a.body)+'</p><p class="sub mono" style="margin:2px 0 0">'+esc(a.by)+' · '+fmtT(a.t)+'</p></div>').join('')+'</div>';
- $('#view').innerHTML=h;bindHead('t-lain');
+ h+='<div class="card"><h3>＋ Pengumuman warga</h3><label class="fl">Judul</label><input class="inp" id="anT" placeholder="cth. Gotong royong Minggu pagi"><label class="fl">Audiens</label><select class="inp" id="anA">'+Object.keys(ANN_AUD).map(a=>'<option>'+a+'</option>').join('')+'</select><label class="fl">Isi singkat</label><input class="inp" id="anB" placeholder="cth. Berkumpul 07.00 di taman"><button class="btn pri" style="margin-top:12px;width:100%" id="anGo">Pratinjau &amp; terbitkan</button><div id="anPrev"></div><p class="honest">Dua langkah — pratinjau dulu, baru kirim ke warga.</p></div>';
+ h+='<div class="card"><h3>Riwayat</h3>'+(S.anns.length?S.anns.map(a=>'<div style="border-top:1px solid rgba(32,24,18,.07);padding:9px 0"><div class="row"><b class="grow" style="font-size:14.5px">'+esc(a.title)+'</b><span class="chip">'+esc(a.aud)+'</span></div><p class="sub" style="margin:3px 0 0">'+esc(a.body)+'</p><p class="sub mono" style="margin:2px 0 0">'+esc(a.by)+' · '+fmtD(a.t)+' '+fmtT(a.t)+'</p></div>').join(''):'<p class="sub">Belum ada pengumuman.</p>')+'</div>';
+ $('#view').innerHTML=h;bindHead();
  $('#anGo').onclick=()=>{
-  const t=$('#anT').value.trim();if(!t){toast('Isi judul pengumuman dulu.');return;}
-  S.anns.unshift({id:'AN-'+(89+S.anns.length),title:t,aud:$('#anA').value,by:meName(),t:Date.now(),body:$('#anB').value.trim()||'(demo)'});
-  save();toast('Pengumuman terbit ke warga (demo).');render();
+ const t=$('#anT').value.trim();if(!t){toast('Isi judul pengumuman dulu.');return;}
+ const aud=$('#anA').value,body=$('#anB').value.trim()||'(tanpa isi)';
+ $('#anPrev').innerHTML='<div class="prev-ann"><span class="eyebrow">Pratinjau di aplikasi warga</span><b style="display:block;font-family:var(--serif);font-weight:500;font-size:17px;margin:4px 0 2px">'+esc(t)+'</b><p class="sub" style="margin:0 0 4px">'+esc(body)+'</p><div class="row"><span class="chip acc">'+esc(aud)+'</span><span class="chip">±'+ANN_AUD[aud]+' unit</span><span class="chip">Sekali kirim</span></div><div class="row" style="margin-top:10px"><button class="btn pri grow" id="anOk">Terbitkan sekarang</button><button class="btn ghost" id="anCancel">Batal</button></div></div>';
+ $('#anCancel').onclick=()=>{$('#anPrev').innerHTML='';};
+ $('#anOk').onclick=()=>{announce(t,body,aud);save();toast('Pengumuman terbit ke ±'+ANN_AUD[aud]+' unit.');render();};
  };
 }
 
 /* ---------- dispatcher & boot ---------- */
 function render(){
  try{
-  const ws=wsOf(VH);let ch=false;
-  if(S.ws!==ws){S.ws=ws;ch=true;}
-  if(!ROLES.find(r=>r[0]===S.role&&r[2]===ws)){S.role=ws==='B'?'rt':'cs';ch=true;}
-  if(ch)save();
-  renderTabs();
-  if(VH.startsWith('d-'))renderDetail(VH.slice(2));
-  else if(VH==='i-booking')renderBooking();
-  else if(Object.prototype.hasOwnProperty.call(FILT,VH))renderList(VH);
-  else if(VH==='i-sos')renderSos();
-  else if(VH==='i-kinerja')renderKin();
-  else if(VH==='i-lain'||VH==='t-lain')renderLain();
-  else if(VH==='i-set')renderSet();
-  else if(VH==='t-set')renderSetB();
-  else if(VH==='t-kegiatan')renderKeg();
-  else if(VH==='t-kerja')renderKerja();
-  else if(VH==='t-petisi')renderPet();
-  else if(VH==='t-umum')renderUmum();
-  else {VH=S.ws==='B'?'t-lapor':'i-inbox';location.hash=VH;render();return;}
-  $('#view').scrollTop=0;
-  document.body.dataset.route=VH;
+ if(LASTVH)SCROLLM[LASTVH]=($('#view')||{}).scrollTop||0;
+ CFIRM='';
+ const ws=wsOf(VH);let ch=false;
+ if(S.ws!==ws){S.ws=ws;ch=true;}
+ if(!ROLES.find(r=>r[0]===S.role&&r[2]===ws)){S.role=ws==='B'?'rt':'cs';ch=true;}
+ if(ch)save();
+ renderTabs();
+ if(VH.startsWith('d-'))renderDetail(VH.slice(2));
+ else if(VH==='i-booking')renderBooking();
+ else if(Object.prototype.hasOwnProperty.call(FILT,VH))renderList(VH);
+ else if(VH==='i-sos')renderSos();
+ else if(VH==='i-kinerja')renderKin();
+ else if(VH==='i-lain'||VH==='t-lain')renderLain();
+ else if(VH==='i-set')renderSet();
+ else if(VH==='t-set')renderSetB();
+ else if(VH==='t-kegiatan')renderKeg();
+ else if(VH==='t-kerja')renderKerja();
+ else if(VH==='t-petisi')renderPet();
+ else if(VH==='t-umum')renderUmum();
+ else {VH=S.ws==='B'?'t-lapor':'i-inbox';location.hash=VH;render();return;}
+ $('#view').scrollTop=SCROLLM[VH]||0;
+ LASTVH=VH;
+ document.body.dataset.route=VH;
  }catch(err){
-  document.body.dataset.err=(err&&err.message)||String(err);
-  const v=$('#view');
-  if(v)v.innerHTML='<div class="empty">Terjadi kesalahan pada demo: '+esc((err&&err.message)||err)+'</div>';
+ document.body.dataset.err=(err&&err.message)||String(err);
+ const v=$('#view');
+ if(v)v.innerHTML='<div class="empty">Terjadi kesalahan pada demo: '+esc((err&&err.message)||err)+'</div>';
  }
 }
 window.addEventListener('hashchange',()=>{const h=(location.hash||'#i-inbox').slice(1);if(h!==VH){BACK=VH;VH=h;}render();});
-try{
+ try{
  applyDark();
  const dr=$('#dreset');if(dr)dr.onclick=doReset;
  render();
+ setInterval(function(){try{
+  $$('[data-tick]').forEach(function(el){var t=+el.getAttribute('data-tick'),d=Date.now()-t,m=Math.floor(d/60000),s=Math.floor((d%60000)/1000);el.textContent=(d<60000?s+' dtk':m+' mnt '+s+' dtk')+' sejak dibuat';});
+  $$('.sos-card[data-state="terkirim"]').forEach(function(c){if(Date.now()-(+c.getAttribute('data-created'))>180000)c.classList.add('over');});
+ }catch(_){}},1000);
  document.body.dataset.boot='ok';
-}catch(e){document.body.dataset.booterr=(e&&e.message)||String(e);}
+ }catch(e){document.body.dataset.booterr=(e&&e.message)||String(e);}
 }catch(e){document.body.dataset.booterr='outer: '+((e&&e.message)||String(e));}
 </script>
 </body>
