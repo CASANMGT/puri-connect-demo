@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Puri Connect — Demo Suite (Warga · Operator · Dashboard)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..600&family=Karla:wght@400;500;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F6F1E8;--surf:#FFFDF8;--ink:#201812;--mut:#7A6B59;--line:#DCD3C4;--line2:rgba(32,24,18,.10);--acc:#4B39A6;--accT:rgba(75,57,166,.08);--good:#2E6B4E;--goodT:rgba(46,107,78,.09);--r-card:16px;--r-btn:11px}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:Karla,"Segoe UI",system-ui,sans-serif;font-size:15.5px;line-height:1.55}
+a{color:inherit}
+.mono{font-family:"Spline Sans Mono",Consolas,monospace}
+.wrap{max-width:1180px;margin:0 auto;padding:46px 28px 60px}
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:22px}
+.brand b{font-family:Fraunces,Georgia,serif;font-size:30px;font-weight:500;display:block;letter-spacing:.2px}
+.brand span{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);font-family:"Spline Sans Mono",monospace}
+.pill{font-family:"Spline Sans Mono",monospace;font-size:10.5px;letter-spacing:.1em;border:1px solid var(--line);color:var(--mut);border-radius:999px;padding:5px 12px;white-space:nowrap;background:var(--surf)}
+.lede{margin:26px 0 8px;max-width:760px}
+.lede h1{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:34px;margin:0 0 8px}
+.lede p{margin:0;color:var(--mut);font-size:16px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px}
+@media(max-width:960px){.grid{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;display:flex;flex-direction:column}
+.thumb{aspect-ratio:16/10;background:#EFE8DB;border-bottom:1px solid var(--line);overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.eyebrow{font-family:"Spline Sans Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.card h2{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:21px;margin:0}
+.card p{margin:0;color:var(--mut);font-size:14.5px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.chip{font-family:"Spline Sans Mono",monospace;font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2.5px 9px;color:var(--mut);background:var(--paper);white-space:nowrap}
+.chip.acc{border-color:rgba(75,57,166,.4);color:var(--acc);background:var(--accT)}
+.chip.good{border-color:rgba(46,107,78,.4);color:var(--good);background:var(--goodT)}
+.btn{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--acc);color:#fff;text-decoration:none;border-radius:var(--r-btn);padding:11px 16px;font-weight:700;font-size:15px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btnrow{display:flex;gap:8px;margin-top:auto}
+.btnrow .btn{margin-top:0;flex:1}
+footer{margin-top:34px;border-top:1px solid var(--line);padding-top:18px;color:var(--mut);font-size:13.5px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+kbd{font-family:"Spline Sans Mono",monospace;font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:1px 6px;background:var(--surf)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><b>Puri Connect</b><span>Demo suite · satu sistem, tiga permukaan</span></div>
+    <span class="pill">DATA CONTOH · MODE DEMO · TANPA SERVER</span>
+  </header>
+
+  <div class="lede">
+    <h1>Satu sistem, tiga permukaan.</h1>
+    <p>Aplikasi warga, aplikasi operator (console pengelola &amp; tata kelola RT–RW), dan dashboard kinerja — dibangun dengan satu bahasa desain (Lontar Modern), data contoh, tanpa koneksi server.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="thumb"><img src="screenshots/v33_home.png" alt="Aplikasi Warga — Beranda"></div>
+      <div class="body">
+        <div class="eyebrow">Permukaan 1 · Mobile</div>
+        <h2>Aplikasi Warga</h2>
+        <p>Tiket perbaikan, SOS, pembayaran, booking fasilitas, tamu &amp; kiriman, komunitas, olahraga (mabar &amp; kompetisi), petisi, bursa 2.0.</p>
+        <div class="meta"><span class="chip acc">v3.3-sport-organizer</span><span class="chip">localStorage puri_v2</span><span class="chip good">diuji headless</span></div>
+        <div class="btnrow"><a class="btn" href="puri_connect_prototype.html">Buka demo warga</a></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="thumb"><img src="screenshots/con_inbox_pengelola.png" alt="Operator App — Console pengelola"></div>
+      <div class="body">
+        <div class="eyebrow">Permukaan 2 · Desktop</div>
+        <h2>Operator App</h2>
+        <p>Console pengelola &amp; tata kelola RT–RW: kotak masuk, tiket &amp; SOS, verifikasi bayar, laporan warga → pekerjaan, kerja bakti, kegiatan, pengumuman, moderasi.</p>
+        <div class="meta"><span class="chip acc">demo puri_console</span><span class="chip">2 workspace · 16 rute</span><span class="chip good">data-boot ok</span></div>
+        <div class="btnrow"><a class="btn" href="puri_console.html">Buka operator app</a></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="thumb"><img src="screenshots/con_kinerja.png" alt="Dashboard Kinerja"></div>
+      <div class="body">
+        <div class="eyebrow">Permukaan 3 · Di dalam Operator App</div>
+        <h2>Dashboard Kinerja</h2>
+        <p>SLA lewat batas, CSAT rata-rata, permintaan terbuka, volume per jenis, dan log aktivitas — untuk CS lead dan pengurus.</p>
+        <div class="meta"><span class="chip">rute #i-kinerja</span><span class="chip">dihitung dari data contoh</span></div>
+        <div class="btnrow"><a class="btn ghost" href="puri_console.html#i-kinerja">Buka dashboard</a></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Semua data adalah contoh. Tidak ada server, WhatsApp, OTP, atau pembayaran nyata. Reset kapan pun: tombol <kbd>Reset data demo</kbd> di dalam aplikasi.</span>
+    <span class="mono">Puri Connect · PAC · Okt 2026</span>
+  </footer>
+</div>
+</body>
+</html>
