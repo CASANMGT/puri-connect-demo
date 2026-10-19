@@ -94,6 +94,12 @@ nav.tabs .b{position:absolute;top:1px;right:calc(50% - 22px);background:var(--ba
 .worksw{display:flex;gap:8px;margin-top:6px}
 .worksw button{flex:1;background:var(--surf);border:1px solid var(--line);color:var(--mut);border-radius:11px;padding:10px 8px;font-weight:600;font-size:13.5px}
 .worksw button.on{background:var(--p);border-color:var(--p);color:#fff}
+.slot{flex:1;min-width:62px;background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:8px 4px;font-family:var(--mono);font-size:11px;color:var(--txt);display:flex;flex-direction:column;gap:2px;align-items:center}
+.slot small{font-size:9.5px;color:var(--mut);max-width:66px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slot.ok{border-color:rgba(46,107,78,.45);background:var(--chipst)}
+.slot.wait{border-color:rgba(154,100,21,.45);background:var(--chipwarn)}
+.slot.done{opacity:.55}
+.slot.free{color:var(--mut);border-style:dashed}
 </style>
 </head>
 <body>
@@ -121,6 +127,13 @@ const CANNED=[
  ['Booking','Slot Anda kami konfirmasi. Harap menjaga kebersihan dan mengembalikan peralatan (demo).'],
  ['Laporan','Terima kasih. Lokasi sudah dicek petugas dan perbaikan dijadwalkan pekan ini (demo).'],
  ['Moderasi','Postingan diturunkan karena melanggar aturan komunitas: jual-beli hanya di Bursa (demo).']];
+const FACILITIES=[{id:'lap1',name:'Lapangan badminton 1'},{id:'lap2',name:'Lapangan badminton 2'},{id:'serba',name:'Ruang serbaguna'}];
+function seedSlots(){return[
+ {f:'lap1',t:'15.00',who:'Rian — B-10-05',id:'BK-3298',state:'baru'},
+ {f:'lap1',t:'16.00',who:'Maya — B-11-05',id:'BK-3301',state:'baru'},
+ {f:'lap1',t:'18.00',who:'Dimas — A-11-04',id:'BK-3295',state:'konfirmasi'},
+ {f:'lap2',t:'19.00',who:'Tia — B-10-05',id:'BK-3290',state:'konfirmasi'},
+ {f:'serba',t:'19.00',who:'RT Blok A',id:'BK-3287',state:'konfirmasi'}];}
 function seed(){
  const T=NOW0;
  return {v:1,ws:'A',role:'cs',prop:'Puri',
@@ -175,11 +188,13 @@ function seed(){
   {id:'PT-28',title:'Rak sepeda dekat lift Blok C',phase:'Proyek · dikerjakan',prog:'Tahap 2 dari 3 — pemasangan rangka',up:T-9*24*H},
   {id:'PT-24',title:'Penambahan CCTV parkir basement',phase:'Usulan baru',prog:'Fase 1 — tanda tangan 41/60 unit',up:T-2*24*H}
  ],
+ slots:seedSlots(),
  logs:[]
  };
 }
-function load(){try{const r=JSON.parse(localStorage.getItem('puri_console_v2'));if(r&&r.v===1&&r.reqs)return r;}catch(_){}return null;}
+function load(){try{const r=JSON.parse(localStorage.getItem('puri_console_v2'));if(r&&r.v===1&&r.reqs){if(!r.slots)r.slots=seedSlots();return r;}}catch(_){}return null;}
 let S=load()||seed();
+const slotFor=id=>(S.slots||[]).find(s=>s.id===id);
 const save=()=>localStorage.setItem('puri_console_v2',JSON.stringify(S));
 
 const TYPELBL={tiket:'Tiket',bayar:'Pembayaran',booking:'Booking',laporan:'Laporan',pekerjaan:'Pekerjaan',moderasi:'Moderasi',kiriman:'Kiriman'};
@@ -234,28 +249,65 @@ function listFor(f){
  return list;
 }
 function itemHtml(r){
- return '<button class="item" data-item="'+r.id+'"><div class="t1">'+esc(r.title)+'</div><div class="t2">'+stChip(r.state)+'<span class="mono">'+r.id+'</span><span>'+esc((TYPELBL[r.type]||'')+(r.from?' · '+r.from:''))+' · '+ago(r.created)+'</span></div>'+slaBar(r)+'</button>';
+ const pic=r.assignee?r.assignee.split(' — ')[0]:null;
+ const mine=!!pic&&meName().indexOf(pic)===0;
+ const step=r.state==='baru'?'Klaim':(/ditugaskan|dikerjakan|ditangani|diterima/.test(r.state)?'Lanjutkan':(r.state==='konfirmasi'?'Pantau jadwal':(r.state==='selesai'?'Tunggu warga':(r.state==='diteruskan'?'Dipantau pengelola':'Lihat'))));
+ const last=r.tl&&r.tl.length?r.tl[r.tl.length-1].x:'';
+ let h='<button class="item" data-item="'+r.id+'"><div class="t1">'+esc(r.title)+'</div><div class="t2">'+stChip(r.state)+'<span class="mono">'+r.id+'</span><span>'+esc((TYPELBL[r.type]||'')+(r.from?' · '+r.from:''))+' · '+ago(r.created)+'</span></div>';
+ h+='<div class="t2" style="margin-top:5px">'+(pic?'<span class="chip'+(mine?' acc':'')+'">'+esc(pic)+(mine?' (Anda)':'')+'</span>':'<span class="chip warn">belum ditangani</span>')+'<span class="chip">'+step+'</span>'+(last?'<small class="sub" style="margin:0;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(last)+'</small>':'')+'</div>'+slaBar(r)+'</button>';
+ return h;
+}
+const GROUPS=[['act','Butuh tindakan','Ambil &amp; tangani — belum ada penanggung jawab.'],['run','Sedang ditangani','Lihat siapa yang merespons — semua peran boleh ikut membantu.'],['info','Info &amp; pantauan','Booking terkonfirmasi, kegiatan &amp; olahraga, dan yang menunggu warga.']];
+function groupOf(r){if(r.state==='baru')return'act';if(/ditugaskan|dikerjakan|ditangani|diterima/.test(r.state))return'run';return'info';}
+function infoItemHtml(a){return '<button class="item" data-go="t-kegiatan"><div class="t1">'+esc(a.title)+'</div><div class="t2"><span class="chip acc">Info · '+esc(a.type)+'</span><span class="mono">'+a.id+'</span><span>'+esc(a.when)+' · '+a.joined+'/'+a.quota+' peserta</span></div><div class="t2" style="margin-top:5px"><span class="chip">Tanpa tindakan</span><small class="sub" style="margin:0">Kelola di tab Kegiatan</small></div></button>';}
+function fokusHtml(){
+ const A={cs:[['i-tiket','Tiket: triage'],['i-booking','Konfirmasi booking'],['i-moderasi','Cek moderasi']],
+ tek:[['i-tiket','Tiket teknisi'],['i-pekerjaan','Pekerjaan fasilitas']],
+ pos:[['i-sos','SOS aktif'],['i-kiriman','Kiriman & tamu'],['i-booking','Jadwal fasilitas']],
+ keu:[['i-bayar','Verifikasi bayar']],mod:[['i-moderasi','Laporan komunitas']],
+ rt:[['t-lapor','Laporan baru'],['t-kerja','Kerja bakti'],['t-kegiatan','Kegiatan']],
+ rw:[['t-lapor','Laporan baru'],['t-petisi','Petisi & proyek'],['t-umum','Pengumuman']]};
+ const list=A[S.role]||A.cs;
+ return '<div class="card"><span class="eyebrow">Fokus hari ini · '+esc(meName().split(' — ')[0])+'</span><div class="row" style="margin-top:7px">'+list.map(x=>'<button class="btn ghost sm" data-f="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><p class="honest">Tugas utama saja — semua peran tetap bisa merespons jenis permintaan apa pun.</p></div>';
 }
 function renderList(route){
  const f=FILT[route]||'all',T=TITLES[route]||['Daftar',''];
  const showBack=(route!=='i-inbox'&&route!=='t-lapor');
+ const grouped=(route==='i-inbox'||route==='t-lapor');
  let h=headHtml(T[0],T[1],{back:showBack});
  if(route==='i-inbox'){
   const opts=[['i-inbox','Semua'],['i-tiket','Tiket'],['i-bayar','Bayar'],['i-booking','Booking'],['i-pekerjaan','Pekerjaan'],['i-moderasi','Moderasi'],['i-kiriman','Kiriman']];
   h+='<div class="fchips">'+opts.map(o=>'<button class="'+(o[0]==='i-inbox'?'on':'')+'" data-f="'+o[0]+'">'+o[1]+'</button>').join('')+'</div>';
  }
+ if(route==='i-inbox'||(route==='t-lapor'&&S.ws==='B'))h+=fokusHtml();
  const list=listFor(f);
- h+=list.length?list.map(itemHtml).join(''):'<div class="empty">Tidak ada permintaan untuk filter ini.</div>';
+ if(grouped){
+  GROUPS.forEach(g=>{
+   const items=list.filter(r=>groupOf(r)===g[0]);
+   if(!items.length&&g[0]!=='act')return;
+   h+='<h2 class="sec">'+g[1]+' <span class="pill">'+items.length+'</span></h2><p class="honest" style="margin:0 16px 2px">'+g[2]+'</p>';
+   h+=items.length?items.map(itemHtml).join(''):'<div class="empty">Tidak ada yang menunggu — antrean bersih.</div>';
+   if(g[0]==='info'&&route==='i-inbox'){
+    const up=S.acts.filter(a=>a.state==='terbit');
+    if(up.length)h+=up.map(infoItemHtml).join('');
+   }
+  });
+ }else{
+  h+=list.length?list.map(itemHtml).join(''):'<div class="empty">Tidak ada permintaan untuk filter ini.</div>';
+ }
  $('#view').innerHTML=h;
  bindHead('i-lain');
  $$('#view [data-item]').forEach(b=>b.onclick=()=>go('d-'+b.dataset.item));
  $$('#view [data-f]').forEach(b=>b.onclick=()=>go(b.dataset.f));
+ $$('#view [data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
 }
 function detailBody(r){
  const chips='<div class="row">'+stChip(r.state)+prioChip(r.prio)+(r.amount?'<span class="chip mono">Rp '+r.amount.toLocaleString('id-ID')+'</span>':'')+(r.cat?'<span class="chip">'+esc(r.cat)+'</span>':'')+(r.assignee?'<span class="chip acc">PIC: '+esc(r.assignee)+'</span>':'')+(r.csat?'<span class="chip good">CSAT '+r.csat+'/5</span>':'')+'</div>';
- let h='<div class="card"><div class="row"><span class="eyebrow">'+esc(TYPELBL[r.type]||r.type)+' · '+r.id+'</span></div><h3 style="margin-top:4px">'+esc(r.title)+'</h3><p class="sub">'+esc((r.from||'')+(r.unit?' · '+r.unit:''))+' · '+ago(r.created)+'</p>'+chips+slaBar(r)+'<p style="margin:10px 0 0">'+esc(r.desc||'')+'</p></div>';
- h+='<div class="card"><h3>Riwayat</h3><div class="tl">'+r.tl.slice().reverse().map(e=>'<div class="ev"><span class="d7 n"></span><div><div>'+esc(e.x)+'</div><small>'+esc(e.by)+' · '+fmtT(e.t)+'</small></div></div>').join('')+'</div></div>';
+ const handle=r.assignee?'Ditangani oleh <b>'+esc(r.assignee)+'</b>'+(r.assignee===meName()?' (Anda)':''):'<b>Belum ada yang menangani</b>';
+ let h='<div class="card"><div class="row"><span class="eyebrow">'+esc(TYPELBL[r.type]||r.type)+' · '+r.id+'</span></div><h3 style="margin-top:4px">'+esc(r.title)+'</h3><p class="sub">'+esc((r.from||'')+(r.unit?' · '+r.unit:''))+' · '+ago(r.created)+'</p>'+chips+slaBar(r)+'<p class="sub" style="margin-top:8px">'+handle+' — semua peran bisa merespons &amp; ikut membantu (demo).</p><p style="margin:10px 0 0">'+esc(r.desc||'')+'</p></div>';
+ h+='<div class="card"><h3>Riwayat</h3><div class="tl">'+r.tl.slice().reverse().map(e=>{const own=e.by===meName();return '<div class="ev"><span class="d7 '+(own?'b':'n')+'"></span><div><div>'+esc(e.x)+'</div><small>'+esc(own?'Anda · '+e.by:e.by)+' · '+fmtT(e.t)+'</small></div></div>';}).join('')+'</div></div>';
  h+='<div class="card"><h3>Balas & tindakan</h3><div class="acts">'+actsHtml(r)+'</div></div>';
+ h+='<div class="card"><h3>Tanggapi thread</h3><textarea class="inp" id="note2" placeholder="Pembaruan singkat untuk tim &amp; warga (demo)"></textarea><button class="btn pri" style="margin-top:10px;width:100%" data-a="noteup">Tambah pembaruan sebagai '+esc(meName().split(' — ')[0])+'</button><p class="honest">Tercatat di riwayat dan terlihat semua tim — respons tidak dikunci per peran.</p></div>';
  return h;
 }
 function actsHtml(r){
@@ -273,7 +325,8 @@ function actsHtml(r){
   }
   case 'booking':{
    if(r.state==='baru')return '<div class="row"><button class="btn pri grow" data-a="bkok">Konfirmasi slot</button><button class="btn ghost grow" data-a="bkno">Tolak / tawarkan lain</button></div>'+cannedHtml(false);
-   return '<p class="sub">Booking '+(r.state==='konfirmasi'?'terkonfirmasi dan terkirim ke warga (demo).':'ditolak dengan catatan.')+'</p>'+cannedHtml(false);
+   if(r.state==='konfirmasi')return '<button class="btn ghost" style="width:100%" data-a="bkdone">Tandai pemakaian selesai</button>'+cannedHtml(false);
+   return '<p class="sub">Booking '+(r.state==='selesai'?'selesai dipakai — slot kembali tersedia (demo).':'ditolak dengan catatan.')+'</p>'+cannedHtml(false);
   }
   case 'moderasi':{
    if(r.state==='baru')return '<button class="btn pri" style="width:100%" data-a="moddel">Hapus + alasan aturan</button><div class="row" style="margin-top:8px"><button class="btn ghost grow" data-a="modwarn">Tegur penulis</button><button class="btn ghost grow" data-a="modskip">Abaikan</button></div>'+cannedHtml(false);
@@ -305,7 +358,7 @@ function renderDetail(id){
  const backTo=(BACK&&BACK!==VH&&!BACK.startsWith('d-'))?BACK:(r.type==='laporan'?'t-lapor':'i-inbox');
  $('#view').innerHTML=headHtml('Detail permintaan','',{back:true})+detailBody(r);
  bindHead(backTo);
- $$('#view .acts [data-a]').forEach(b=>b.onclick=()=>doReqAct(r,b.dataset.a));
+ $$('#view [data-a]').forEach(b=>b.onclick=()=>doReqAct(r,b.dataset.a));
 }
 function doReqAct(r,a){
  const me=meName(),note=(($('#note')||{}).value||'').trim();
@@ -316,8 +369,10 @@ function doReqAct(r,a){
   case 'close':r.state='ditutup';addTl(r,'Sistem','Ditutup oleh petugas setelah 48 jam tanpa respons warga (demo).');break;
   case 'payok':r.state='selesai';addTl(r,'Sari — Keuangan','Approve — status Lunas, kuitansi terkirim (demo).');break;
   case 'payno':if(!note){toast('Isi alasan penolakan dulu.');return;}r.state='ditolak';addTl(r,'Sari — Keuangan','Ditolak: '+note);break;
-  case 'bkok':r.state='konfirmasi';addTl(r,me,'Slot dikonfirmasi & terkirim ke warga (demo).');break;
-  case 'bkno':r.state='ditolak';addTl(r,me,'Ditolak / tawaran slot lain dikirim (demo).');break;
+  case 'bkok':r.state='konfirmasi';{const sl=slotFor(r.id);if(sl)sl.state='konfirmasi';}addTl(r,me,'Slot dikonfirmasi & terkirim ke warga (demo).');break;
+  case 'bkno':r.state='ditolak';{const sl=slotFor(r.id);if(sl)sl.state='batal';}addTl(r,me,'Ditolak / tawaran slot lain dikirim (demo).');break;
+  case 'bkdone':r.state='selesai';{const sl=slotFor(r.id);if(sl)sl.state='selesai';}addTl(r,me,'Pemakaian selesai — fasilitas siap untuk slot berikutnya (demo).');break;
+  case 'noteup':{const v=((($('#note2')||{}).value)||'').trim();if(!v){toast('Tulis pembaruan dulu.');return;}addTl(r,me,'Pembaruan: '+v);toast('Pembaruan tercatat & terlihat tim (demo).');break;}
   case 'moddel':r.state='dihapus';addTl(r,'Citra — Moderator','Postingan dihapus — aturan: jual-beli hanya di Bursa (demo).');break;
   case 'modwarn':r.state='ditegur';addTl(r,'Citra — Moderator','Penulis ditegur via pesan sistem (demo).');break;
   case 'modskip':r.state='diabaikan';addTl(r,'Citra — Moderator','Laporan diabaikan — tidak melanggar aturan.');break;
@@ -398,6 +453,48 @@ function renderLain(){
  bindHead(S.ws==='A'?'i-inbox':'t-lapor');
  bindProfile();
  $$('#view .menu a').forEach(a=>a.onclick=e=>{e.preventDefault();go(a.getAttribute('href').slice(1));});
+}
+/* ---------- booking fasilitas ---------- */
+const BKTIMES=['15.00','16.00','17.00','18.00','19.00','20.00'];
+function renderBooking(){
+ const live=S.slots.filter(s=>s.state!=='batal');
+ const pend=S.reqs.filter(r=>r.type==='booking'&&r.state==='baru');
+ let h=headHtml('Booking fasilitas','Kelola slot & konfirmasi',{back:true});
+ h+='<div class="card"><div class="row"><span class="eyebrow">Jadwal hari ini</span><span class="pill">'+live.length+' slot terisi</span></div>';
+ FACILITIES.forEach(f=>{
+  const slots=live.filter(s=>s.f===f.id);
+  h+='<div style="margin-top:12px"><b style="font-size:14.5px">'+esc(f.name)+'</b><div class="row" style="margin-top:6px">';
+  BKTIMES.forEach(t=>{
+   const s=slots.find(x=>x.t===t);
+   if(s)h+='<button class="slot '+(s.state==='konfirmasi'?'ok':s.state==='selesai'?'done':'wait')+'" data-slot="'+esc(s.id)+'">'+t+'<small>'+esc(s.who.split(' — ')[0])+'</small></button>';
+   else h+='<button class="slot free" data-manual="'+f.id+':'+t+'">'+t+'<small>kosong</small></button>';
+  });
+  h+='</div></div>';
+ });
+ h+='<p class="honest">Ketuk slot terisi untuk membuka permintaan; slot kosong untuk mencatat booking manual lewat telepon/loket. Pos jaga melihat jadwal ini untuk akses fasilitas.</p></div>';
+ if(pend.length){h+='<h2 class="sec">Menunggu konfirmasi <span class="pill">'+pend.length+'</span></h2>'+pend.map(itemHtml).join('');}
+ h+='<div class="card"><h3>＋ Catat booking manual</h3><label class="fl">Fasilitas</label><select class="inp" id="bfac">'+FACILITIES.map(f=>'<option value="'+f.id+'">'+esc(f.name)+'</option>').join('')+'</select><div class="row" style="margin-top:2px"><div class="grow"><label class="fl">Jam</label><select class="inp" id="btim">'+BKTIMES.map(t=>'<option>'+t+'</option>').join('')+'</select></div><div class="grow"><label class="fl">Nama / unit</label><input class="inp" id="bwho" placeholder="cth. Bu Sari — C-02-01"></div></div><button class="btn pri" style="margin-top:12px;width:100%" id="bgo">Catat &amp; konfirmasi slot</button><p class="honest">Untuk booking lewat telepon/loket — langsung tercatat terkonfirmasi (demo).</p></div>';
+ $('#view').innerHTML=h;
+ bindHead('i-lain');
+ $$('#view [data-item]').forEach(b=>b.onclick=()=>go('d-'+b.dataset.item));
+ $$('#view [data-slot]').forEach(b=>b.onclick=()=>{
+  const s=S.slots.find(x=>x.id===b.dataset.slot)||{id:'?',who:'',state:''};
+  if(getReq(s.id))go('d-'+s.id);
+  else toast(s.id+' · '+s.who+' · '+(s.state==='konfirmasi'?'terkonfirmasi':'menunggu konfirmasi')+' (demo).');
+ });
+ $$('#view [data-manual]').forEach(b=>b.onclick=()=>{
+  const p=b.dataset.manual.split(':');
+  $('#bfac').value=p[0];$('#btim').value=p[1];$('#bwho').focus();
+  toast('Slot kosong dipilih — isi nama lalu catat (demo).');
+ });
+ $('#bgo').onclick=()=>{
+  const f=$('#bfac').value,t=$('#btim').value,who=$('#bwho').value.trim()||'Walk-in (loket)';
+  if(S.slots.find(s=>s.f===f&&s.t===t&&s.state!=='batal')){toast('Slot sudah terisi — pilih jam lain.');return;}
+  const id='BK-'+(3320+S.slots.length);
+  S.slots.push({f:f,t:t,who:who,id:id,state:'konfirmasi'});
+  S.reqs.unshift({id:id,type:'booking',prio:'normal',from:who,unit:'Loket pengelola',title:'Booking '+FACILITIES.find(x=>x.id===f).name+' — '+t+' (manual)',desc:'Dicatat manual oleh '+meName()+' untuk booking telepon/loket (demo).',state:'konfirmasi',assignee:meName(),created:Date.now(),sla:120,csat:null,tl:[{t:Date.now(),by:meName(),x:'Booking manual dicatat & slot dikonfirmasi (demo).'}]});
+  save();toast('Slot '+t+' tercatat & terkonfirmasi (demo).');render();
+ };
 }
 /* ---------- pengaturan A & B ---------- */
 function renderSet(){
@@ -498,6 +595,7 @@ function render(){
   if(ch)save();
   renderTabs();
   if(VH.startsWith('d-'))renderDetail(VH.slice(2));
+  else if(VH==='i-booking')renderBooking();
   else if(Object.prototype.hasOwnProperty.call(FILT,VH))renderList(VH);
   else if(VH==='i-sos')renderSos();
   else if(VH==='i-kinerja')renderKin();
